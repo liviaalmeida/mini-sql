@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Minimal SQL interpreter written in JavaScript",
   "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc-watch --onSuccess \"node ./dist/index.js\"",
