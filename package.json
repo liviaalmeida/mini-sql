@@ -1,0 +1,31 @@
+{
+  "name": "mini-sql",
+  "version": "0.1.0",
+  "description": "Minimal SQL interpreter written in JavaScript",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc-watch --onSuccess \"node ./dist/index.js\"",
+    "prepare": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Lívia Almeida <leave.ah@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "jison": "^0.4.18",
+    "lex": "^1.7.9"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.1",
+    "jest": "^25.3.0",
+    "ts-jest": "^25.3.1",
+    "tsc-watch": "^4.0.0",
+    "tslib": "^1.11.1",
+    "typescript": "^3.6.3"
+  },
+  "files": [
+    "dist"
+  ]
+}
