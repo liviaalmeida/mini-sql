@@ -1,9 +1,30 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": [
+      "esnext",
+      "es2015",
+      "dom"
+    ],
     "declaration": true,
+    "removeComments": true,
     "outDir": "./dist",
-    "strict": true
-  }
+    "rootDir": "lib",
+    "pretty": true,
+    "strict": true,
+    "sourceMap": true,
+    "typeRoots": [
+      "lib/@types"
+    ],
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "lib/index.ts",
+    "lib/**/*"
+  ],
+  "compileOnSave": true
 }
