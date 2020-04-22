@@ -2,6 +2,13 @@
   "name": "mini-sql",
   "version": "0.1.0",
   "description": "Minimal SQL interpreter written in JavaScript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liviaalmeida/mini-sql.git"
+  },
+  "bugs": {
+    "url": "https://github.com/liviaalmeida/mini-sql/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
