@@ -1,0 +1,80 @@
+/* converted on Sat Jul 25, 2020, 19:07 (UTC-03) by jison-to-w3c v0.50 which is Copyright (c) 2011-2020 by Gunther Rademacher <grd@gmx.net> */
+
+sql ::= statement+ EOF
+
+statement ::= ddl_statement ";"
+
+ddl_statement ::= createschema_statement
+           | createtable_statement
+           | dropschema_statement
+           | useschema_statement
+
+createschema_statement ::= create_schema NAME
+
+createtable_statement ::= create_table NAME "(" table_constraint ( "," table_constraint )* ")"
+
+useschema_statement ::= use_schema NAME
+
+dropschema_statement ::= drop_schema NAME
+
+table_constraint ::= ( CONSTRAINT identifier? )? constraint
+           | column
+
+constraint ::= PRIMARY KEY "(" list_identifiers ")"
+           | FOREIGN KEY "(" list_identifiers ")" REFERENCES foreign_reference
+
+column ::= identifier datatype column_complement*
+
+column_complement ::= ( CONSTRAINT identifier? )? column_constraint
+           | NOT? NULL
+           | AUTO_INCREMENT
+
+column_constraint ::= ( PRIMARY | UNIQUE ) KEY
+           | REFERENCES foreign_reference
+
+foreign_reference ::= NAME "(" list_identifiers ")"
+
+datatype ::= ( ENUM "(" string ( "," string )? ")" | ( CHAR | VARCHAR | VARCHAR2 | CHARACTER VARYING? ) uint_typed? | ( CLOB | NCHAR | NVARCHAR | TEXT ) uint? | LONGTEXT | MEDIUMTEXT | NCLOB | TINYTEXT ) collation?
+           | ( DOUBLE PRECISION? | FLOAT | REAL ) float?
+           | LONG ( ( NVARCHAR | VARCHAR ) uint? collation? | VARBINARY uint? )
+           | TIME uint? ( ( WITH | WITHOUT ) TIME ZONE )?
+           | ( ( INT | INTEGER | MEDIUMINT | SMALLINT | TINYINT ) uint? | BIGINT ) UNSIGNED?
+           | ( DECIMAL | NUMBER | NUMERIC ) decimal?
+           | ( BINARY | BIT | BLOB | TIMESTAMPTZ | TIMETZ | VARBINARY ) uint?
+           | ARRAY
+           | BOOL
+           | BOOLEAN
+           | DATE
+           | LONGBLOB
+           | MEDIUMBLOB
+           | OTHER
+           | TINYBLOB
+           | UUID
+
+collation ::= COLLATE NAME
+
+decimal ::= "(" "*" ( "," S_INT )? ")"
+           | float
+
+float ::= "(" U_INT ( "," ( S_INT | U_INT ) )? ")"
+
+list_identifiers ::= identifier ( "," identifier )*
+
+identifier ::= '"' NAME '"'
+           | "`" NAME "`"
+           | "[" NAME "]"
+           | NAME
+
+string ::= "'" CHARS "'"
+
+uint_typed ::= ( "(" U_INT ( BYTE | CHAR ) ")" | uint )?
+
+uint ::= "(" U_INT ")"
+
+create_schema ::= CREATE SCHEMA
+
+create_table ::= CREATE ( TEMP | TEMPORARY )? TABLE
+
+drop_schema ::= DROP SCHEMA
+
+use_schema ::= USE
