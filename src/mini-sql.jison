@@ -420,11 +420,6 @@ use_schema
 		{ $$ = { type: $1 }; }
 	;
 
-opt_CONSTRAINT
-	: { /**/ }
-	| CONSTRAINT
-	;
-
 opt_PRECISION
 	: { $$ = {}; }
 	| PRECISION
