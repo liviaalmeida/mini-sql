@@ -198,17 +198,29 @@
    
    <body>
       
-      <p style="font-size: 14px; font-weight:bold"><a name="sql">sql:</a></p><img border="0" src="diagram/sql.png" height="53" width="249" usemap="#sql.map"><map name="sql.map"><area shape="rect" coords="49,17,135,49" href="#statement" title="statement"><area shape="rect" coords="175,17,219,49" href="#EOF" title="EOF"></map><p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="statement">statement:</a></p><img border="0" src="diagram/statement.png" height="37" width="215" usemap="#statement.map"><map name="statement.map"><area shape="rect" coords="29,1,141,33" href="#ddl_statement" title="ddl_statement"></map><p>referenced by:
+      <p style="font-size: 14px; font-weight:bold"><a name="sql">sql:</a></p><img border="0" src="diagram/sql.png" height="53" width="249" usemap="#sql.map"><map name="sql.map"><area shape="rect" coords="49,17,135,49" href="#statement" title="statement"><area shape="rect" coords="175,17,219,49" href="#EOF" title="EOF"></map><p>no references</p><br><p style="font-size: 14px; font-weight:bold"><a name="statement">statement:</a></p><img border="0" src="diagram/statement.png" height="81" width="255" usemap="#statement.map"><map name="statement.map"><area shape="rect" coords="49,1,161,33" href="#ddl_statement" title="ddl_statement"><area shape="rect" coords="49,45,157,77" href="#tcl_statement" title="tcl_statement"></map><p>referenced by:
          
          <ul>
             
             <li><a href="#sql" title="sql">sql</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ddl_statement">ddl_statement:</a></p><img border="0" src="diagram/ddl_statement.png" height="169" width="281" usemap="#ddl_statement.map"><map name="ddl_statement.map"><area shape="rect" coords="49,1,231,33" href="#createschema_statement" title="createschema_statement"><area shape="rect" coords="49,45,215,77" href="#createtable_statement" title="createtable_statement"><area shape="rect" coords="49,89,221,121" href="#dropschema_statement" title="dropschema_statement"><area shape="rect" coords="49,133,213,165" href="#useschema_statement" title="useschema_statement"></map><p>referenced by:
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="ddl_statement">ddl_statement:</a></p><img border="0" src="diagram/ddl_statement.png" height="213" width="281" usemap="#ddl_statement.map"><map name="ddl_statement.map"><area shape="rect" coords="49,1,215,33" href="#createtable_statement" title="createtable_statement"><area shape="rect" coords="49,45,231,77" href="#createschema_statement" title="createschema_statement"><area shape="rect" coords="49,89,203,121" href="#droptable_statement" title="droptable_statement"><area shape="rect" coords="49,133,221,165" href="#dropschema_statement" title="dropschema_statement"><area shape="rect" coords="49,177,213,209" href="#useschema_statement" title="useschema_statement"></map><p>referenced by:
          
          <ul>
             
             <li><a href="#statement" title="statement">statement</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="tcl_statement">tcl_statement:</a></p><img border="0" src="diagram/tcl_statement.png" height="81" width="241" usemap="#tcl_statement.map"><map name="tcl_statement.map"><area shape="rect" coords="49,1,187,33" href="#commit_statement" title="commit_statement"><area shape="rect" coords="49,45,191,77" href="#rollback_statement" title="rollback_statement"></map><p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#statement" title="statement">statement</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="createtable_statement">createtable_statement:</a></p><img border="0" src="diagram/createtable_statement.png" height="81" width="509" usemap="#createtable_statement.map"><map name="createtable_statement.map"><area shape="rect" coords="29,45,129,77" href="#create_table" title="create_table"><area shape="rect" coords="149,45,203,77" href="#NAME" title="NAME"><area shape="rect" coords="289,45,413,77" href="#table_constraint" title="table_constraint"></map><p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ddl_statement" title="ddl_statement">ddl_statement</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="createschema_statement">createschema_statement:</a></p><img border="0" src="diagram/createschema_statement.png" height="37" width="249" usemap="#createschema_statement.map"><map name="createschema_statement.map"><area shape="rect" coords="29,1,145,33" href="#create_schema" title="create_schema"><area shape="rect" coords="165,1,219,33" href="#NAME" title="NAME"></map><p>referenced by:
          
@@ -216,7 +228,13 @@
             
             <li><a href="#ddl_statement" title="ddl_statement">ddl_statement</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="createtable_statement">createtable_statement:</a></p><img border="0" src="diagram/createtable_statement.png" height="81" width="509" usemap="#createtable_statement.map"><map name="createtable_statement.map"><area shape="rect" coords="29,45,129,77" href="#create_table" title="create_table"><area shape="rect" coords="149,45,203,77" href="#NAME" title="NAME"><area shape="rect" coords="289,45,413,77" href="#table_constraint" title="table_constraint"></map><p>referenced by:
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="droptable_statement">droptable_statement:</a></p><img border="0" src="diagram/droptable_statement.png" height="37" width="221" usemap="#droptable_statement.map"><map name="droptable_statement.map"><area shape="rect" coords="29,1,117,33" href="#drop_table" title="drop_table"><area shape="rect" coords="137,1,191,33" href="#NAME" title="NAME"></map><p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#ddl_statement" title="ddl_statement">ddl_statement</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="dropschema_statement">dropschema_statement:</a></p><img border="0" src="diagram/dropschema_statement.png" height="37" width="239" usemap="#dropschema_statement.map"><map name="dropschema_statement.map"><area shape="rect" coords="29,1,135,33" href="#drop_schema" title="drop_schema"><area shape="rect" coords="155,1,209,33" href="#NAME" title="NAME"></map><p>referenced by:
          
          <ul>
             
@@ -228,11 +246,17 @@
             
             <li><a href="#ddl_statement" title="ddl_statement">ddl_statement</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="dropschema_statement">dropschema_statement:</a></p><img border="0" src="diagram/dropschema_statement.png" height="37" width="239" usemap="#dropschema_statement.map"><map name="dropschema_statement.map"><area shape="rect" coords="29,1,135,33" href="#drop_schema" title="drop_schema"><area shape="rect" coords="155,1,209,33" href="#NAME" title="NAME"></map><p>referenced by:
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="commit_statement">commit_statement:</a></p><img border="0" src="diagram/commit_statement.png" height="37" width="129" usemap="#commit_statement.map"><map name="commit_statement.map"><area shape="rect" coords="29,1,99,33" href="#COMMIT" title="COMMIT"></map><p>referenced by:
          
          <ul>
             
-            <li><a href="#ddl_statement" title="ddl_statement">ddl_statement</a></li>
+            <li><a href="#tcl_statement" title="tcl_statement">tcl_statement</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="rollback_statement">rollback_statement:</a></p><img border="0" src="diagram/rollback_statement.png" height="37" width="143" usemap="#rollback_statement.map"><map name="rollback_statement.map"><area shape="rect" coords="29,1,113,33" href="#ROLLBACK" title="ROLLBACK"></map><p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#tcl_statement" title="tcl_statement">tcl_statement</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="table_constraint">table_constraint:</a></p><img border="0" src="diagram/table_constraint.png" height="145" width="479" usemap="#table_constraint.map"><map name="table_constraint.map"><area shape="rect" coords="69,33,169,65" href="#CONSTRAINT" title="CONSTRAINT"><area shape="rect" coords="209,65,285,97" href="#identifier" title="identifier"><area shape="rect" coords="345,1,429,33" href="#constraint" title="constraint"><area shape="rect" coords="49,109,113,141" href="#column" title="column"></map><p>referenced by:
          
@@ -272,7 +296,7 @@
             
             <li><a href="#constraint" title="constraint">constraint</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="datatype">datatype:</a></p><img border="0" src="diagram/datatype.png" height="2133" width="687" usemap="#datatype.map"><map name="datatype.map"><area shape="rect" coords="69,1,125,33" href="#ENUM" title="ENUM"><area shape="rect" coords="191,1,247,33" href="#string" title="string"><area shape="rect" coords="331,33,387,65" href="#string" title="string"><area shape="rect" coords="89,77,143,109" href="#CHAR" title="CHAR"><area shape="rect" coords="89,121,167,153" href="#VARCHAR" title="VARCHAR"><area shape="rect" coords="89,165,175,197" href="#VARCHAR2" title="VARCHAR2"><area shape="rect" coords="89,209,183,241" href="#CHARACTER" title="CHARACTER"><area shape="rect" coords="223,241,297,273" href="#VARYING" title="VARYING"><area shape="rect" coords="377,109,465,141" href="#uint_typed" title="uint_typed"><area shape="rect" coords="89,285,143,317" href="#CLOB" title="CLOB"><area shape="rect" coords="89,329,153,361" href="#NCHAR" title="NCHAR"><area shape="rect" coords="89,373,177,405" href="#NVARCHAR" title="NVARCHAR"><area shape="rect" coords="89,417,139,449" href="#TEXT" title="TEXT"><area shape="rect" coords="237,317,281,349" href="#uint" title="uint"><area shape="rect" coords="69,461,153,493" href="#LONGTEXT" title="LONGTEXT"><area shape="rect" coords="69,505,171,537" href="#MEDIUMTEXT" title="MEDIUMTEXT"><area shape="rect" coords="69,549,131,581" href="#NCLOB" title="NCLOB"><area shape="rect" coords="69,593,147,625" href="#TINYTEXT" title="TINYTEXT"><area shape="rect" coords="545,33,617,65" href="#collation" title="collation"><area shape="rect" coords="69,637,139,669" href="#DOUBLE" title="DOUBLE"><area shape="rect" coords="179,669,269,701" href="#PRECISION" title="PRECISION"><area shape="rect" coords="69,713,127,745" href="#FLOAT" title="FLOAT"><area shape="rect" coords="69,757,121,789" href="#REAL" title="REAL"><area shape="rect" coords="349,669,397,701" href="#float" title="float"><area shape="rect" coords="49,801,103,833" href="#LONG" title="LONG"><area shape="rect" coords="163,801,251,833" href="#NVARCHAR" title="NVARCHAR"><area shape="rect" coords="163,845,241,877" href="#VARCHAR" title="VARCHAR"><area shape="rect" coords="311,833,355,865" href="#uint" title="uint"><area shape="rect" coords="415,833,487,865" href="#collation" title="collation"><area shape="rect" coords="143,889,233,921" href="#VARBINARY" title="VARBINARY"><area shape="rect" coords="273,921,317,953" href="#uint" title="uint"><area shape="rect" coords="49,965,99,997" href="#TIME" title="TIME"><area shape="rect" coords="139,997,183,1029" href="#uint" title="uint"><area shape="rect" coords="263,997,317,1029" href="#WITH" title="WITH"><area shape="rect" coords="263,1041,341,1073" href="#WITHOUT" title="WITHOUT"><area shape="rect" coords="381,997,431,1029" href="#TIME" title="TIME"><area shape="rect" coords="451,997,505,1029" href="#ZONE" title="ZONE"><area shape="rect" coords="89,1085,129,1117" href="#INT" title="INT"><area shape="rect" coords="89,1129,163,1161" href="#INTEGER" title="INTEGER"><area shape="rect" coords="89,1173,181,1205" href="#MEDIUMINT" title="MEDIUMINT"><area shape="rect" coords="89,1217,169,1249" href="#SMALLINT" title="SMALLINT"><area shape="rect" coords="89,1261,157,1293" href="#TINYINT" title="TINYINT"><area shape="rect" coords="241,1117,285,1149" href="#uint" title="uint"><area shape="rect" coords="69,1305,133,1337" href="#BIGINT" title="BIGINT"><area shape="rect" coords="365,1117,451,1149" href="#UNSIGNED" title="UNSIGNED"><area shape="rect" coords="69,1349,145,1381" href="#DECIMAL" title="DECIMAL"><area shape="rect" coords="69,1393,141,1425" href="#NUMBER" title="NUMBER"><area shape="rect" coords="69,1437,147,1469" href="#NUMERIC" title="NUMERIC"><area shape="rect" coords="207,1381,275,1413" href="#decimal" title="decimal"><area shape="rect" coords="69,1481,135,1513" href="#BINARY" title="BINARY"><area shape="rect" coords="69,1525,109,1557" href="#BIT" title="BIT"><area shape="rect" coords="69,1569,121,1601" href="#BLOB" title="BLOB"><area shape="rect" coords="69,1613,175,1645" href="#TIMESTAMPTZ" title="TIMESTAMPTZ"><area shape="rect" coords="69,1657,133,1689" href="#TIMETZ" title="TIMETZ"><area shape="rect" coords="69,1701,159,1733" href="#VARBINARY" title="VARBINARY"><area shape="rect" coords="235,1513,279,1545" href="#uint" title="uint"><area shape="rect" coords="49,1745,109,1777" href="#ARRAY" title="ARRAY"><area shape="rect" coords="49,1789,103,1821" href="#BOOL" title="BOOL"><area shape="rect" coords="49,1833,127,1865" href="#BOOLEAN" title="BOOLEAN"><area shape="rect" coords="49,1877,101,1909" href="#DATE" title="DATE"><area shape="rect" coords="49,1921,137,1953" href="#LONGBLOB" title="LONGBLOB"><area shape="rect" coords="49,1965,153,1997" href="#MEDIUMBLOB" title="MEDIUMBLOB"><area shape="rect" coords="49,2009,111,2041" href="#OTHER" title="OTHER"><area shape="rect" coords="49,2053,129,2085" href="#TINYBLOB" title="TINYBLOB"><area shape="rect" coords="49,2097,101,2129" href="#UUID" title="UUID"></map><p>referenced by:
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="datatype">datatype:</a></p><img border="0" src="diagram/datatype.png" height="2145" width="687" usemap="#datatype.map"><map name="datatype.map"><area shape="rect" coords="69,45,125,77" href="#ENUM" title="ENUM"><area shape="rect" coords="211,45,267,77" href="#string" title="string"><area shape="rect" coords="89,89,143,121" href="#CHAR" title="CHAR"><area shape="rect" coords="89,133,167,165" href="#VARCHAR" title="VARCHAR"><area shape="rect" coords="89,177,175,209" href="#VARCHAR2" title="VARCHAR2"><area shape="rect" coords="89,221,183,253" href="#CHARACTER" title="CHARACTER"><area shape="rect" coords="223,253,297,285" href="#VARYING" title="VARYING"><area shape="rect" coords="377,121,465,153" href="#size_typed" title="size_typed"><area shape="rect" coords="89,297,143,329" href="#CLOB" title="CLOB"><area shape="rect" coords="89,341,153,373" href="#NCHAR" title="NCHAR"><area shape="rect" coords="89,385,177,417" href="#NVARCHAR" title="NVARCHAR"><area shape="rect" coords="89,429,139,461" href="#TEXT" title="TEXT"><area shape="rect" coords="237,329,281,361" href="#size" title="size"><area shape="rect" coords="69,473,153,505" href="#LONGTEXT" title="LONGTEXT"><area shape="rect" coords="69,517,171,549" href="#MEDIUMTEXT" title="MEDIUMTEXT"><area shape="rect" coords="69,561,131,593" href="#NCLOB" title="NCLOB"><area shape="rect" coords="69,605,147,637" href="#TINYTEXT" title="TINYTEXT"><area shape="rect" coords="545,77,617,109" href="#collation" title="collation"><area shape="rect" coords="69,649,139,681" href="#DOUBLE" title="DOUBLE"><area shape="rect" coords="179,681,269,713" href="#PRECISION" title="PRECISION"><area shape="rect" coords="69,725,127,757" href="#FLOAT" title="FLOAT"><area shape="rect" coords="69,769,121,801" href="#REAL" title="REAL"><area shape="rect" coords="349,681,431,713" href="#size_float" title="size_float"><area shape="rect" coords="49,813,103,845" href="#LONG" title="LONG"><area shape="rect" coords="163,813,251,845" href="#NVARCHAR" title="NVARCHAR"><area shape="rect" coords="163,857,241,889" href="#VARCHAR" title="VARCHAR"><area shape="rect" coords="311,845,355,877" href="#size" title="size"><area shape="rect" coords="415,845,487,877" href="#collation" title="collation"><area shape="rect" coords="143,901,233,933" href="#VARBINARY" title="VARBINARY"><area shape="rect" coords="273,933,317,965" href="#size" title="size"><area shape="rect" coords="49,977,99,1009" href="#TIME" title="TIME"><area shape="rect" coords="139,1009,183,1041" href="#size" title="size"><area shape="rect" coords="263,1009,317,1041" href="#WITH" title="WITH"><area shape="rect" coords="263,1053,341,1085" href="#WITHOUT" title="WITHOUT"><area shape="rect" coords="381,1009,431,1041" href="#TIME" title="TIME"><area shape="rect" coords="451,1009,505,1041" href="#ZONE" title="ZONE"><area shape="rect" coords="89,1097,129,1129" href="#INT" title="INT"><area shape="rect" coords="89,1141,163,1173" href="#INTEGER" title="INTEGER"><area shape="rect" coords="89,1185,181,1217" href="#MEDIUMINT" title="MEDIUMINT"><area shape="rect" coords="89,1229,169,1261" href="#SMALLINT" title="SMALLINT"><area shape="rect" coords="89,1273,157,1305" href="#TINYINT" title="TINYINT"><area shape="rect" coords="241,1129,285,1161" href="#size" title="size"><area shape="rect" coords="69,1317,133,1349" href="#BIGINT" title="BIGINT"><area shape="rect" coords="365,1129,451,1161" href="#UNSIGNED" title="UNSIGNED"><area shape="rect" coords="69,1361,145,1393" href="#DECIMAL" title="DECIMAL"><area shape="rect" coords="69,1405,141,1437" href="#NUMBER" title="NUMBER"><area shape="rect" coords="69,1449,147,1481" href="#NUMERIC" title="NUMERIC"><area shape="rect" coords="207,1393,309,1425" href="#size_decimal" title="size_decimal"><area shape="rect" coords="69,1493,135,1525" href="#BINARY" title="BINARY"><area shape="rect" coords="69,1537,109,1569" href="#BIT" title="BIT"><area shape="rect" coords="69,1581,121,1613" href="#BLOB" title="BLOB"><area shape="rect" coords="69,1625,175,1657" href="#TIMESTAMPTZ" title="TIMESTAMPTZ"><area shape="rect" coords="69,1669,133,1701" href="#TIMETZ" title="TIMETZ"><area shape="rect" coords="69,1713,159,1745" href="#VARBINARY" title="VARBINARY"><area shape="rect" coords="235,1525,279,1557" href="#size" title="size"><area shape="rect" coords="49,1757,109,1789" href="#ARRAY" title="ARRAY"><area shape="rect" coords="49,1801,103,1833" href="#BOOL" title="BOOL"><area shape="rect" coords="49,1845,127,1877" href="#BOOLEAN" title="BOOLEAN"><area shape="rect" coords="49,1889,101,1921" href="#DATE" title="DATE"><area shape="rect" coords="49,1933,137,1965" href="#LONGBLOB" title="LONGBLOB"><area shape="rect" coords="49,1977,153,2009" href="#MEDIUMBLOB" title="MEDIUMBLOB"><area shape="rect" coords="49,2021,111,2053" href="#OTHER" title="OTHER"><area shape="rect" coords="49,2065,129,2097" href="#TINYBLOB" title="TINYBLOB"><area shape="rect" coords="49,2109,101,2141" href="#UUID" title="UUID"></map><p>referenced by:
          
          <ul>
             
@@ -283,20 +307,6 @@
          <ul>
             
             <li><a href="#datatype" title="datatype">datatype</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="decimal">decimal:</a></p><img border="0" src="diagram/decimal.png" height="113" width="379" usemap="#decimal.map"><map name="decimal.map"><area shape="rect" coords="207,33,263,65" href="#S_INT" title="S_INT"><area shape="rect" coords="49,77,97,109" href="#float" title="float"></map><p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#datatype" title="datatype">datatype</a></li>
-            </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="float">float:</a></p><img border="0" src="diagram/float.png" height="113" width="411" usemap="#float.map"><map name="float.map"><area shape="rect" coords="75,1,133,33" href="#U_INT" title="U_INT"><area shape="rect" coords="237,33,293,65" href="#S_INT" title="S_INT"><area shape="rect" coords="237,77,295,109" href="#U_INT" title="U_INT"></map><p>referenced by:
-         
-         <ul>
-            
-            <li><a href="#datatype" title="datatype">datatype</a></li>
-            
-            <li><a href="#decimal" title="decimal">decimal</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="list_identifiers">list_identifiers:</a></p><img border="0" src="diagram/list_identifiers.png" height="81" width="175" usemap="#list_identifiers.map"><map name="list_identifiers.map"><area shape="rect" coords="49,45,125,77" href="#identifier" title="identifier"></map><p>referenced by:
          
@@ -324,19 +334,39 @@
             
             <li><a href="#datatype" title="datatype">datatype</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="uint_typed">uint_typed:</a></p><img border="0" src="diagram/uint_typed.png" height="145" width="363" usemap="#uint_typed.map"><map name="uint_typed.map"><area shape="rect" coords="95,21,153,53" href="#U_INT" title="U_INT"><area shape="rect" coords="193,21,243,53" href="#BYTE" title="BYTE"><area shape="rect" coords="193,65,247,97" href="#CHAR" title="CHAR"><area shape="rect" coords="49,109,93,141" href="#uint" title="uint"></map><p>referenced by:
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="size_decimal">size_decimal:</a></p><img border="0" src="diagram/size_decimal.png" height="113" width="379" usemap="#size_decimal.map"><map name="size_decimal.map"><area shape="rect" coords="207,33,263,65" href="#S_INT" title="S_INT"><area shape="rect" coords="49,77,131,109" href="#size_float" title="size_float"></map><p>referenced by:
          
          <ul>
             
             <li><a href="#datatype" title="datatype">datatype</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="uint">uint:</a></p><img border="0" src="diagram/uint.png" height="37" width="209" usemap="#uint.map"><map name="uint.map"><area shape="rect" coords="75,1,133,33" href="#U_INT" title="U_INT"></map><p>referenced by:
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="size_float">size_float:</a></p><img border="0" src="diagram/size_float.png" height="113" width="411" usemap="#size_float.map"><map name="size_float.map"><area shape="rect" coords="75,1,133,33" href="#U_INT" title="U_INT"><area shape="rect" coords="237,33,293,65" href="#S_INT" title="S_INT"><area shape="rect" coords="237,77,295,109" href="#U_INT" title="U_INT"></map><p>referenced by:
          
          <ul>
             
             <li><a href="#datatype" title="datatype">datatype</a></li>
             
-            <li><a href="#uint_typed" title="uint_typed">uint_typed</a></li>
+            <li><a href="#size_decimal" title="size_decimal">size_decimal</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="size_typed">size_typed:</a></p><img border="0" src="diagram/size_typed.png" height="145" width="363" usemap="#size_typed.map"><map name="size_typed.map"><area shape="rect" coords="95,21,153,53" href="#U_INT" title="U_INT"><area shape="rect" coords="193,21,243,53" href="#BYTE" title="BYTE"><area shape="rect" coords="193,65,247,97" href="#CHAR" title="CHAR"><area shape="rect" coords="49,109,93,141" href="#size" title="size"></map><p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#datatype" title="datatype">datatype</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="size">size:</a></p><img border="0" src="diagram/size.png" height="37" width="209" usemap="#size.map"><map name="size.map"><area shape="rect" coords="75,1,133,33" href="#U_INT" title="U_INT"></map><p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#datatype" title="datatype">datatype</a></li>
+            
+            <li><a href="#size_typed" title="size_typed">size_typed</a></li>
+            </ul>
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="create_table">create_table:</a></p><img border="0" src="diagram/create_table.png" height="113" width="359" usemap="#create_table.map"><map name="create_table.map"><area shape="rect" coords="29,1,97,33" href="#CREATE" title="CREATE"><area shape="rect" coords="137,33,189,65" href="#TEMP" title="TEMP"><area shape="rect" coords="137,77,231,109" href="#TEMPORARY" title="TEMPORARY"><area shape="rect" coords="271,1,329,33" href="#TABLE" title="TABLE"></map><p>referenced by:
+         
+         <ul>
+            
+            <li><a href="#createtable_statement" title="createtable_statement">createtable_statement</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="create_schema">create_schema:</a></p><img border="0" src="diagram/create_schema.png" height="37" width="219" usemap="#create_schema.map"><map name="create_schema.map"><area shape="rect" coords="29,1,97,33" href="#CREATE" title="CREATE"><area shape="rect" coords="117,1,189,33" href="#SCHEMA" title="SCHEMA"></map><p>referenced by:
          
@@ -344,11 +374,11 @@
             
             <li><a href="#createschema_statement" title="createschema_statement">createschema_statement</a></li>
             </ul>
-         </p><br><p style="font-size: 14px; font-weight:bold"><a name="create_table">create_table:</a></p><img border="0" src="diagram/create_table.png" height="113" width="359" usemap="#create_table.map"><map name="create_table.map"><area shape="rect" coords="29,1,97,33" href="#CREATE" title="CREATE"><area shape="rect" coords="137,33,189,65" href="#TEMP" title="TEMP"><area shape="rect" coords="137,77,231,109" href="#TEMPORARY" title="TEMPORARY"><area shape="rect" coords="271,1,329,33" href="#TABLE" title="TABLE"></map><p>referenced by:
+         </p><br><p style="font-size: 14px; font-weight:bold"><a name="drop_table">drop_table:</a></p><img border="0" src="diagram/drop_table.png" height="113" width="345" usemap="#drop_table.map"><map name="drop_table.map"><area shape="rect" coords="29,1,83,33" href="#DROP" title="DROP"><area shape="rect" coords="123,33,175,65" href="#TEMP" title="TEMP"><area shape="rect" coords="123,77,217,109" href="#TEMPORARY" title="TEMPORARY"><area shape="rect" coords="257,1,315,33" href="#TABLE" title="TABLE"></map><p>referenced by:
          
          <ul>
             
-            <li><a href="#createtable_statement" title="createtable_statement">createtable_statement</a></li>
+            <li><a href="#droptable_statement" title="droptable_statement">droptable_statement</a></li>
             </ul>
          </p><br><p style="font-size: 14px; font-weight:bold"><a name="drop_schema">drop_schema:</a></p><img border="0" src="diagram/drop_schema.png" height="37" width="205" usemap="#drop_schema.map"><map name="drop_schema.map"><area shape="rect" coords="29,1,83,33" href="#DROP" title="DROP"><area shape="rect" coords="103,1,175,33" href="#SCHEMA" title="SCHEMA"></map><p>referenced by:
          

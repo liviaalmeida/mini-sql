@@ -2,20 +2,30 @@
 
 sql ::= statement+ EOF
 
-statement ::= ddl_statement ";"
+statement ::= ( ddl_statement | tcl_statement ) ";"
 
-ddl_statement ::= createschema_statement
-           | createtable_statement
+ddl_statement ::= createtable_statement
+           | createschema_statement
+           | droptable_statement
            | dropschema_statement
            | useschema_statement
 
-createschema_statement ::= create_schema NAME
+tcl_statement ::= commit_statement
+           | rollback_statement
 
 createtable_statement ::= create_table NAME "(" table_constraint ( "," table_constraint )* ")"
 
-useschema_statement ::= use_schema NAME
+createschema_statement ::= create_schema NAME
+
+droptable_statement ::= drop_table NAME
 
 dropschema_statement ::= drop_schema NAME
+
+useschema_statement ::= use_schema NAME
+
+commit_statement ::= COMMIT
+
+rollback_statement ::= ROLLBACK
 
 table_constraint ::= ( CONSTRAINT identifier? )? constraint
            | column
@@ -34,13 +44,13 @@ column_constraint ::= ( PRIMARY | UNIQUE ) KEY
 
 foreign_reference ::= NAME "(" list_identifiers ")"
 
-datatype ::= ( ENUM "(" string ( "," string )? ")" | ( CHAR | VARCHAR | VARCHAR2 | CHARACTER VARYING? ) uint_typed? | ( CLOB | NCHAR | NVARCHAR | TEXT ) uint? | LONGTEXT | MEDIUMTEXT | NCLOB | TINYTEXT ) collation?
-           | ( DOUBLE PRECISION? | FLOAT | REAL ) float?
-           | LONG ( ( NVARCHAR | VARCHAR ) uint? collation? | VARBINARY uint? )
-           | TIME uint? ( ( WITH | WITHOUT ) TIME ZONE )?
-           | ( ( INT | INTEGER | MEDIUMINT | SMALLINT | TINYINT ) uint? | BIGINT ) UNSIGNED?
-           | ( DECIMAL | NUMBER | NUMERIC ) decimal?
-           | ( BINARY | BIT | BLOB | TIMESTAMPTZ | TIMETZ | VARBINARY ) uint?
+datatype ::= ( ENUM "(" string ( "," string )* ")" | ( CHAR | VARCHAR | VARCHAR2 | CHARACTER VARYING? ) size_typed? | ( CLOB | NCHAR | NVARCHAR | TEXT ) size? | LONGTEXT | MEDIUMTEXT | NCLOB | TINYTEXT ) collation?
+           | ( DOUBLE PRECISION? | FLOAT | REAL ) size_float?
+           | LONG ( ( NVARCHAR | VARCHAR ) size? collation? | VARBINARY size? )
+           | TIME size? ( ( WITH | WITHOUT ) TIME ZONE )?
+           | ( ( INT | INTEGER | MEDIUMINT | SMALLINT | TINYINT ) size? | BIGINT ) UNSIGNED?
+           | ( DECIMAL | NUMBER | NUMERIC ) size_decimal?
+           | ( BINARY | BIT | BLOB | TIMESTAMPTZ | TIMETZ | VARBINARY ) size?
            | ARRAY
            | BOOL
            | BOOLEAN
@@ -53,11 +63,6 @@ datatype ::= ( ENUM "(" string ( "," string )? ")" | ( CHAR | VARCHAR | VARCHAR2
 
 collation ::= COLLATE NAME
 
-decimal ::= "(" "*" ( "," S_INT )? ")"
-           | float
-
-float ::= "(" U_INT ( "," ( S_INT | U_INT ) )? ")"
-
 list_identifiers ::= identifier ( "," identifier )*
 
 identifier ::= '"' NAME '"'
@@ -67,13 +72,20 @@ identifier ::= '"' NAME '"'
 
 string ::= "'" CHARS "'"
 
-uint_typed ::= ( "(" U_INT ( BYTE | CHAR ) ")" | uint )?
+size_decimal ::= "(" "*" ( "," S_INT )? ")"
+           | size_float
 
-uint ::= "(" U_INT ")"
+size_float ::= "(" U_INT ( "," ( S_INT | U_INT ) )? ")"
+
+size_typed ::= ( "(" U_INT ( BYTE | CHAR ) ")" | size )?
+
+size ::= "(" U_INT ")"
+
+create_table ::= CREATE ( TEMP | TEMPORARY )? TABLE
 
 create_schema ::= CREATE SCHEMA
 
-create_table ::= CREATE ( TEMP | TEMPORARY )? TABLE
+drop_table ::= DROP ( TEMP | TEMPORARY )? TABLE
 
 drop_schema ::= DROP SCHEMA
 
