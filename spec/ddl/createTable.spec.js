@@ -10,8 +10,7 @@ const tables = {
 					}
 				}
 			],
-			name: 'my_new_table',
-			type: 'CREATE_TABLE'
+			name: 'my_new_table', type: 'CREATE_TABLE'
 		}
 	},
 	'some__table': {
@@ -55,9 +54,7 @@ const tables = {
 					constraint: { primary: [ 'ID', 'NAME' ] }
 				}
 			],
-			name: 'some_temp_table',
-			temp: true,
-			type: 'CREATE_TABLE'
+			name: 'some_temp_table', temp: true, type: 'CREATE_TABLE'
 		}
 	},
 	'the_temporary_table': {
@@ -70,14 +67,12 @@ const tables = {
 					}
 				}
 			],
-			name: 'the_temporary_table',
-			temp: true,
-			type: 'CREATE_TABLE'
+			name: 'the_temporary_table', temp: true, type: 'CREATE_TABLE'
 		}
 	},
 	'CUSTOMERS': {
 		command: 'CREATE TABLE CUSTOMERS(ID INT NOT NULL,\
-			NAME VARCHAR (20) NOT NULL,\
+			NAME VARCHAR (20) UNIQUE KEY,\
 			AGE INT NOT NULL,\
 			ADDRESS CHAR (25),\
 			SALARY DECIMAL (18, 2),\
@@ -92,7 +87,7 @@ const tables = {
 				},
 				{
 					column: {
-						constraints: { never_null: true },
+						constraints: { unique: true },
 						name: 'NAME', type: 'VARCHAR', size: '20'
 					}
 				},
@@ -116,8 +111,7 @@ const tables = {
 					constraint: { primary: [ 'ID' ] }
 				}
 			],
-			name: 'CUSTOMERS',
-			type: 'CREATE_TABLE'
+			name: 'CUSTOMERS', type: 'CREATE_TABLE'
 		}
 	}
 }
@@ -126,7 +120,6 @@ const tables = {
 describe("CREATE TABLE command should return a command ", () => {
 	test('create table my_new_table', () => {
 		const { command, result } = tables['my_new_table']
-
 		const { statement } = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
@@ -134,7 +127,6 @@ describe("CREATE TABLE command should return a command ", () => {
 
 	test('create temporary table the_temporary_table', () => {
 		const { command, result } = tables['the_temporary_table']
-
 		const { statement } = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
@@ -142,7 +134,6 @@ describe("CREATE TABLE command should return a command ", () => {
 
 	test('create table CUSTOMERS with expected data types', () => {
 		const { command, result } = tables['CUSTOMERS']
-
 		const { statement } = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
@@ -150,7 +141,6 @@ describe("CREATE TABLE command should return a command ", () => {
 
 	test('create temporary some__table with expected data types', () => {
 		const { command, result } = tables['some__table']
-
 		const { statement } = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
