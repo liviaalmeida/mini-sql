@@ -4,7 +4,8 @@ sql ::= statement+ EOF
 
 statement ::= ( ddl_statement | tcl_statement ) ";"
 
-ddl_statement ::= createtable_statement
+ddl_statement ::= alterschema_statement
+           | createtable_statement
            | createschema_statement
            | droptable_statement
            | dropschema_statement
@@ -13,55 +14,58 @@ ddl_statement ::= createtable_statement
 tcl_statement ::= commit_statement
            | rollback_statement
 
-createtable_statement ::= create_table NAME "(" table_constraint ( "," table_constraint )* ")"
+alterschema_statement ::= 'ALTER' 'SCHEMA' NAME 'RENAME' ( 'TO' | 'AS' ) NAME
 
-createschema_statement ::= create_schema NAME
+createtable_statement ::= 'CREATE' ( 'TEMP' | 'TEMPORARY' )? 'TABLE' NAME "(" table_constraint ( "," table_constraint )* ")"
 
-droptable_statement ::= drop_table NAME
+createschema_statement ::= 'CREATE' 'SCHEMA' NAME
 
-dropschema_statement ::= drop_schema NAME
+droptable_statement ::= 'DROP' ( 'TEMP' | 'TEMPORARY' )? 'TABLE' NAME
 
-useschema_statement ::= use_schema NAME
+dropschema_statement ::= 'DROP' 'SCHEMA' NAME
 
-commit_statement ::= COMMIT
+useschema_statement ::= 'USE' NAME
 
-rollback_statement ::= ROLLBACK
+commit_statement ::= 'COMMIT'
 
-table_constraint ::= ( CONSTRAINT identifier? )? constraint
+rollback_statement ::= 'ROLLBACK'
+
+table_constraint ::= ( 'CONSTRAINT' identifier? )? constraint
            | column
 
-constraint ::= PRIMARY KEY "(" list_identifiers ")"
-           | FOREIGN KEY "(" list_identifiers ")" REFERENCES foreign_reference
+constraint ::= 'PRIMARY' 'KEY' "(" list_identifiers ")"
+           | 'FOREIGN' 'KEY' "(" list_identifiers ")" 'REFERENCES' foreign_reference
 
 column ::= identifier datatype column_complement*
 
-column_complement ::= ( CONSTRAINT identifier? )? column_constraint
-           | NOT? NULL
-           | AUTO_INCREMENT
+column_complement ::= ( 'CONSTRAINT' identifier? )? column_constraint
+           | 'NOT'? 'NULL'
+           | 'AUTO_INCREMENT'
+           | 'AUTOINCREMENT'
 
-column_constraint ::= ( PRIMARY | UNIQUE ) KEY
-           | REFERENCES foreign_reference
+column_constraint ::= ( 'PRIMARY' | 'UNIQUE' ) 'KEY'
+           | 'REFERENCES' foreign_reference
 
 foreign_reference ::= NAME "(" list_identifiers ")"
 
-datatype ::= ( ENUM "(" string ( "," string )* ")" | ( CHAR | VARCHAR | VARCHAR2 | CHARACTER VARYING? ) size_typed? | ( CLOB | NCHAR | NVARCHAR | TEXT ) size? | LONGTEXT | MEDIUMTEXT | NCLOB | TINYTEXT ) collation?
-           | ( DOUBLE PRECISION? | FLOAT | REAL ) size_float?
-           | LONG ( ( NVARCHAR | VARCHAR ) size? collation? | VARBINARY size? )
-           | TIME size? ( ( WITH | WITHOUT ) TIME ZONE )?
-           | ( ( INT | INTEGER | MEDIUMINT | SMALLINT | TINYINT ) size? | BIGINT ) UNSIGNED?
-           | ( DECIMAL | NUMBER | NUMERIC ) size_decimal?
-           | ( BINARY | BIT | BLOB | TIMESTAMPTZ | TIMETZ | VARBINARY ) size?
-           | ARRAY
-           | BOOL
-           | BOOLEAN
-           | DATE
-           | LONGBLOB
-           | MEDIUMBLOB
-           | OTHER
-           | TINYBLOB
-           | UUID
+datatype ::= ( 'ENUM' "(" string ( "," string )* ")" | ( 'CHAR' | 'VARCHAR' | 'VARCHAR2' | 'CHARACTER' 'VARYING'? ) size_typed? | ( 'CLOB' | 'NCHAR' | 'NVARCHAR' | 'TEXT' ) size? | 'LONGTEXT' | 'MEDIUMTEXT' | 'NCLOB' | 'TINYTEXT' ) collation?
+           | ( 'DOUBLE' 'PRECISION'? | 'FLOAT' | 'REAL' ) size_float?
+           | 'LONG' ( ( 'NVARCHAR' | 'VARCHAR' ) size? collation? | 'VARBINARY' size? )
+           | 'TIME' size? ( ( 'WITH' | 'WITHOUT' ) 'TIME' 'ZONE' )?
+           | ( ( 'INT' | 'INTEGER' | 'MEDIUMINT' | 'SMALLINT' | 'TINYINT' ) size? | 'BIGINT' ) 'UNSIGNED'?
+           | ( 'DECIMAL' | 'NUMBER' | 'NUMERIC' ) size_decimal?
+           | ( 'BINARY' | 'BIT' | 'BLOB' | 'TIMESTAMPTZ' | 'TIMETZ' | 'VARBINARY' ) size?
+           | 'ARRAY'
+           | 'BOOL'
+           | 'BOOLEAN'
+           | 'DATE'
+           | 'LONGBLOB'
+           | 'MEDIUMBLOB'
+           | 'OTHER'
+           | 'TINYBLOB'
+           | 'UUID'
 
-collation ::= COLLATE NAME
+collation ::= 'COLLATE' NAME
 
 list_identifiers ::= identifier ( "," identifier )*
 
@@ -77,16 +81,6 @@ size_decimal ::= "(" "*" ( "," S_INT )? ")"
 
 size_float ::= "(" U_INT ( "," ( S_INT | U_INT ) )? ")"
 
-size_typed ::= ( "(" U_INT ( BYTE | CHAR ) ")" | size )?
+size_typed ::= ( "(" U_INT ( 'BYTE' | 'CHAR' ) ")" | size )?
 
 size ::= "(" U_INT ")"
-
-create_table ::= CREATE ( TEMP | TEMPORARY )? TABLE
-
-create_schema ::= CREATE SCHEMA
-
-drop_table ::= DROP ( TEMP | TEMPORARY )? TABLE
-
-drop_schema ::= DROP SCHEMA
-
-use_schema ::= USE

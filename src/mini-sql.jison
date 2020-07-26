@@ -6,27 +6,27 @@
 %%
 
 \s+                   	/* skip whitespace */
-'COMMIT'								return 'COMMIT'
-'ROLLBACK'							return 'ROLLBACK'
 '*'											return 'STAR'
-'CREATE'								return 'CREATE'
 'TEMP'									return 'TEMP'
 'TEMPORARY'							return 'TEMP'
+'ALTER'									return 'ALTER'
+'CREATE'								return 'CREATE'
 'DROP'									return 'DROP'
 'USE'										return 'USE'
+'COMMIT'								return 'COMMIT'
+'ROLLBACK'							return 'ROLLBACK'
+'RENAME'								return 'RENAME'
+'TO'										return 'TO'
+'AS'										return 'AS'
 'SCHEMA'								return 'SCHEMA'
 'TABLE'									return 'TABLE'
-'IF'										return 'IF'
-'NOT'										return 'NOT'
-'EXISTS'								return 'EXISTS'
 'CONSTRAINT'						return 'CONSTRAINT'
 'PRIMARY'								return 'PRIMARY'
 'UNIQUE'								return 'UNIQUE'
 'FOREIGN'								return 'FOREIGN'
 'KEY'										return 'KEY'
 'REFERENCES'						return 'REFERENCES'
-'ASC'										return 'ASC'
-'DESC'									return 'DESC'
+'NOT'										return 'NOT'
 'NULL'									return 'NULL'
 'AUTO_INCREMENT'				return 'AUTO_INCREMENT'
 'AUTOINCREMENT'					return 'AUTO_INCREMENT'
@@ -100,7 +100,7 @@
 
 // %left 'OR'
 // %left 'AND'
-// %left 'NOT'
+%left 'NOT'
 // %left '+' '-'
 // %left '*' '/'
 // %left '^'
@@ -132,7 +132,8 @@ statement
 	;
 
 ddl_statement
-	: createtable_statement
+	: alterschema_statement
+	| createtable_statement
 	| createschema_statement
 	| droptable_statement
 	| dropschema_statement
@@ -144,14 +145,21 @@ tcl_statement
 	| rollback_statement
 	;
 
+alterschema_statement
+	: ALTER SCHEMA NAME RENAME TO NAME
+		{ $$ = { name: $6, old_name: $3, type: 'ALTER_SCHEMA' }; }
+	| ALTER SCHEMA NAME RENAME AS NAME
+		{ $$ = { name: $6, old_name: $3, type: 'ALTER_SCHEMA' }; }
+	;
+
 createtable_statement
 	: create_table NAME PAREN_OPEN table_constraints PAREN_CLOSE
 		{ $$ = { name: $2, constraints: $table_constraints, ...$create_table }; }
 	;
 
 createschema_statement
-	: create_schema NAME
-		{ $$ = { name: $2, ...$create_schema }; }
+	: CREATE SCHEMA NAME
+		{ $$ = { name: $3, type: 'CREATE_SCHEMA' }; }
 	;
 
 droptable_statement
@@ -160,13 +168,13 @@ droptable_statement
 	;
 
 dropschema_statement
-	: drop_schema NAME
-		{ $$ = { name: $2, ...$drop_schema }; }
+	: DROP SCHEMA NAME
+		{ $$ = { name: $3, type: 'DROP_SCHEMA' }; }
 	;
 
 useschema_statement
-	: use_schema NAME
-		{ $$ = { name: $2, ...$use_schema }; }
+	: USE NAME
+		{ $$ = { name: $2, type: 'USE' }; }
 	;
 
 commit_statement
@@ -244,7 +252,7 @@ foreign_reference
 
 datatype
 	: ENUM PAREN_OPEN list_strings PAREN_CLOSE opt_collation
-		{ $$ = { type: $1, enum: [ $string, $opt_commaString ], ...$opt_collation }; }
+		{ $$ = { type: $1, enum: [ $string, $list_strings ], ...$opt_collation }; }
 	| CHAR opt_size_typed opt_collation
 		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
 	| CHARACTER opt_size_typed opt_collation
@@ -341,12 +349,6 @@ opt_collation
 		{ $$ = { collation: $2 }; }
 	;
 
-opt_commaString
-	: { $$ = ''; }
-	| COMMA string
-		{ $$ = $string; }
-	;
-
 list_identifiers
 	: list_identifiers COMMA identifier
 		{ $$ = [ ...$list_identifiers, $identifier ]; }
@@ -436,26 +438,11 @@ create_table
 		{ $$ = { type: `CREATE_TABLE` }; }
 	;
 
-create_schema
-	: CREATE SCHEMA
-		{ $$ = { type: `CREATE_SCHEMA` }; }
-	;
-
 drop_table
 	: DROP TEMP TABLE
 		{ $$ = { type: `DROP_TABLE`, temp: true }; }
 	| DROP TABLE
 		{ $$ = { type: `DROP_TABLE` }; }
-	;
-
-drop_schema
-	: DROP SCHEMA
-		{ $$ = { type: `DROP_SCHEMA` }; }
-	;
-
-use_schema
-	: USE
-		{ $$ = { type: 'USE' }; }
 	;
 
 opt_PRECISION
