@@ -6,6 +6,8 @@
 %%
 
 \s+                   	/* skip whitespace */
+'COMMIT'								return 'COMMIT'
+'ROLLBACK'							return 'ROLLBACK'
 '*'											return 'STAR'
 'CREATE'								return 'CREATE'
 'TEMP'									return 'TEMP'
@@ -125,18 +127,21 @@ statements
 statement
 	: ddl_statement EOS
 		{ $$ = { statement: $ddl_statement }; }
+	| tcl_statement EOS
+		{ $$ = { statement: $tcl_statement }; }
 	;
 
 ddl_statement
-	: createschema_statement
-	| createtable_statement
+	: createtable_statement
+	| createschema_statement
+	| droptable_statement
 	| dropschema_statement
 	| useschema_statement
 	;
 
-createschema_statement
-	: create_schema NAME
-		{ $$ = { name: $2, ...$create_schema }; }
+tcl_statement
+	: commit_statement
+	| rollback_statement
 	;
 
 createtable_statement
@@ -144,14 +149,34 @@ createtable_statement
 		{ $$ = { name: $2, constraints: $table_constraints, ...$create_table }; }
 	;
 
-useschema_statement
-	: use_schema NAME
-		{ $$ = { name: $2, ...$use_schema }; }
+createschema_statement
+	: create_schema NAME
+		{ $$ = { name: $2, ...$create_schema }; }
+	;
+
+droptable_statement
+	: drop_table NAME
+		{ $$ = { name: $2, ...$drop_table }; }
 	;
 
 dropschema_statement
 	: drop_schema NAME
 		{ $$ = { name: $2, ...$drop_schema }; }
+	;
+
+useschema_statement
+	: use_schema NAME
+		{ $$ = { name: $2, ...$use_schema }; }
+	;
+
+commit_statement
+	: COMMIT
+		{ $$ = { type: 'COMMIT' }; }
+	;
+
+rollback_statement
+	: ROLLBACK
+		{ $$ = { type: 'ROLLBACK' }; }
 	;
 
 table_constraints
@@ -179,25 +204,24 @@ constraint
 
 column
 	: identifier datatype column_complements
-		{ $$ = { name: $identifier, datatype: $datatype, constraints: $column_complements }; }
+		{ $$ = { name: $identifier, constraints: $column_complements, ...$datatype }; }
 	| identifier datatype
-		{ $$ = { name: $identifier, datatype: $datatype }; }
+		{ $$ = { name: $identifier, ...$datatype }; }
 	;
 
 column_complements
 	: column_complements column_complement
-		{ $$ = [ ...$column_complements, ...$column_complement ]; }
+		{ $$ = { ...$column_complements, ...$column_complement }; }
 	| column_complement
-		{ $$ = [$column_complement]; }
 	;
 
 column_complement
 	: CONSTRAINT opt_identifier column_constraint
-		{ $$ = { constraint: $column_constraint, ...$opt_identifier }; }
+		{ $$ = { ...$column_constraint, ...$opt_identifier }; }
 	| column_constraint
-		{ $$ = { constraint: $column_constraint }; }
+		{ $$ = { ...$column_constraint }; }
 	| NOT NULL
-		{ $$ = { null_allowed: false }; }
+		{ $$ = { never_null: true }; }
 	| NULL
 		{ $$ = { null_allowed: true }; }
 	| AUTO_INCREMENT
@@ -219,44 +243,44 @@ foreign_reference
 	;
 
 datatype
-	: ENUM PAREN_OPEN string opt_commaString PAREN_CLOSE opt_collation
+	: ENUM PAREN_OPEN list_strings PAREN_CLOSE opt_collation
 		{ $$ = { type: $1, enum: [ $string, $opt_commaString ], ...$opt_collation }; }
-	| CHAR opt_uintTyped opt_collation
-		{ $$ = { type: $1, ...$opt_uintTyped, ...$opt_collation }; }
-	| CHARACTER opt_uintTyped opt_collation
-		{ $$ = { type: $1, ...$opt_uintTyped, ...$opt_collation }; }
-	| CHARACTER VARYING opt_uintTyped opt_collation
-		{ $$ = { type: $1, varying: true, ...$opt_uintTyped, ...$opt_collation }; }
-	| VARCHAR opt_uintTyped opt_collation
-		{ $$ = { type: $1, ...$opt_uintTyped, ...$opt_collation }; }
-	| VARCHAR2 opt_uintTyped opt_collation
-		{ $$ = { type: $1, ...$opt_uintTyped, ...$opt_collation }; }
-	| DOUBLE opt_PRECISION opt_float
-		{ $$ = { type: $1, ...$opt_PRECISION, ...$opt_float }; }
-	| CLOB opt_uint opt_collation
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_collation }; }
-	| LONG NVARCHAR opt_uint opt_collation
-		{ $$ = { type: $2, long: true, ...$opt_uint, ...$opt_collation }; }
-	| LONG VARCHAR opt_uint opt_collation
-		{ $$ = { type: $2, long: true, ...$opt_uint, ...$opt_collation }; }
-	| NCHAR opt_uint opt_collation
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_collation }; }
-	| NVARCHAR opt_uint opt_collation
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_collation }; }
-	| TEXT opt_uint opt_collation
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_collation }; }
-	| TIME opt_uint opt_TIMEZONE
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_TIMEZONE }; }
-	| INT opt_uint opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_UNSIGNED }; }
-	| INTEGER opt_uint opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_UNSIGNED }; }
-	| MEDIUMINT opt_uint opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_UNSIGNED }; }
-	| SMALLINT opt_uint opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_UNSIGNED }; }
-	| TINYINT opt_uint opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_uint, ...$opt_UNSIGNED }; }
+	| CHAR opt_size_typed opt_collation
+		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+	| CHARACTER opt_size_typed opt_collation
+		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+	| CHARACTER VARYING opt_size_typed opt_collation
+		{ $$ = { type: $1, varying: true, ...$opt_size_typed, ...$opt_collation }; }
+	| VARCHAR opt_size_typed opt_collation
+		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+	| VARCHAR2 opt_size_typed opt_collation
+		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+	| DOUBLE opt_PRECISION opt_size_float
+		{ $$ = { type: $1, ...$opt_PRECISION, ...$opt_size_float }; }
+	| CLOB opt_size opt_collation
+		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+	| LONG NVARCHAR opt_size opt_collation
+		{ $$ = { type: $2, long: true, ...$opt_size, ...$opt_collation }; }
+	| LONG VARCHAR opt_size opt_collation
+		{ $$ = { type: $2, long: true, ...$opt_size, ...$opt_collation }; }
+	| NCHAR opt_size opt_collation
+		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+	| NVARCHAR opt_size opt_collation
+		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+	| TEXT opt_size opt_collation
+		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+	| TIME opt_size opt_TIMEZONE
+		{ $$ = { type: $1, ...$opt_size, ...$opt_TIMEZONE }; }
+	| INT opt_size opt_UNSIGNED
+		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+	| INTEGER opt_size opt_UNSIGNED
+		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+	| MEDIUMINT opt_size opt_UNSIGNED
+		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+	| SMALLINT opt_size opt_UNSIGNED
+		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+	| TINYINT opt_size opt_UNSIGNED
+		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
 	| BIGINT opt_UNSIGNED
 		{ $$ = { type: $1, ...$opt_UNSIGNED }; }
 	| LONGTEXT opt_collation
@@ -267,30 +291,30 @@ datatype
 		{ $$ = { type: $1, ...$opt_collation }; }
 	| TINYTEXT opt_collation
 		{ $$ = { type: $1, ...$opt_collation }; }
-	| DECIMAL opt_decimal
-		{ $$ = { type: $1, ...$opt_decimal }; }
-	| NUMBER opt_decimal
-		{ $$ = { type: $1, ...$opt_decimal }; }
-	| NUMERIC opt_decimal
-		{ $$ = { type: $1, ...$opt_decimal }; }
-	| FLOAT opt_float
-		{ $$ = { type: $1, ...$opt_float }; }
-	| REAL opt_float
-		{ $$ = { type: $1, ...$opt_float }; }
-	| BINARY opt_uint
-		{ $$ = { type: $1, ...$opt_uint }; }
-	| BIT opt_uint
-		{ $$ = { type: $1, ...$opt_uint }; }
-	| BLOB opt_uint
-		{ $$ = { type: $1, ...$opt_uint }; }
-	| LONG VARBINARY opt_uint
-		{ $$ = { type: $2, long: true, ...$opt_uint }; }
-	| TIMESTAMPTZ opt_uint
-		{ $$ = { type: $1, ...$opt_uint }; }
-	| TIMETZ opt_uint
-		{ $$ = { type: $1, ...$opt_uint }; }
-	| VARBINARY opt_uint
-		{ $$ = { type: $1, ...$opt_uint }; }
+	| DECIMAL opt_size_decimal
+		{ $$ = { type: $1, ...$opt_size_decimal }; }
+	| NUMBER opt_size_decimal
+		{ $$ = { type: $1, ...$opt_size_decimal }; }
+	| NUMERIC opt_size_decimal
+		{ $$ = { type: $1, ...$opt_size_decimal }; }
+	| FLOAT opt_size_float
+		{ $$ = { type: $1, ...$opt_size_float }; }
+	| REAL opt_size_float
+		{ $$ = { type: $1, ...$opt_size_float }; }
+	| BINARY opt_size
+		{ $$ = { type: $1, ...$opt_size }; }
+	| BIT opt_size
+		{ $$ = { type: $1, ...$opt_size }; }
+	| BLOB opt_size
+		{ $$ = { type: $1, ...$opt_size }; }
+	| LONG VARBINARY opt_size
+		{ $$ = { type: $2, long: true, ...$opt_size }; }
+	| TIMESTAMPTZ opt_size
+		{ $$ = { type: $1, ...$opt_size }; }
+	| TIMETZ opt_size
+		{ $$ = { type: $1, ...$opt_size }; }
+	| VARBINARY opt_size
+		{ $$ = { type: $1, ...$opt_size }; }
 	| ARRAY
 		{ $$ = { type: $1 }; }
 	| BOOL
@@ -323,36 +347,9 @@ opt_commaString
 		{ $$ = $string; }
 	;
 
-opt_decimal
-	: { $$ = {}; }
-	| decimal
-	;
-
-decimal
-	: PAREN_OPEN STAR COMMA S_INT PAREN_CLOSE
-		{ $$ = { value: `${$2},${$4}` }; }
-	| PAREN_OPEN STAR PAREN_CLOSE
-		{ $$ = { value: `${$2}` }; }
-	| float
-	;
-
-opt_float
-	: { $$ = {}; }
-	| float
-	;
-
-float
-	: PAREN_OPEN U_INT COMMA S_INT PAREN_CLOSE
-		{ $$ = { value: `${$2},${$4}` }; }
-	| PAREN_OPEN U_INT COMMA U_INT PAREN_CLOSE
-		{ $$ = { value: `${$2},${$4}` }; }
-	| PAREN_OPEN U_INT PAREN_CLOSE
-		{ $$ = { value: `${$2}` }; }
-	;
-
 list_identifiers
 	: list_identifiers COMMA identifier
-		{ $$ = [ ...$list_identifiers, ...$identifier ]; }
+		{ $$ = [ ...$list_identifiers, $identifier ]; }
 	| identifier
 		{ $$ = [$identifier]; }
 	;
@@ -374,50 +371,91 @@ identifier
 		{ $$ = $1; }
 	;
 
+list_strings
+	: list_strings COMMA string
+		{ $$ = [ ...$list_strings, ...$string ]; }
+	| string
+		{ $$ = [$string]; }
+	;
+
 string
 	: QUOTE_SINGLE CHARS QUOTE_SINGLE
 		{ $$ = $2; }
 	;
 
-opt_uintTyped
+opt_size_decimal
+	: { $$ = {}; }
+	| size_decimal
+	;
+
+size_decimal
+	: PAREN_OPEN STAR COMMA S_INT PAREN_CLOSE
+		{ $$ = { size: $2, precision: $4 }; }
+	| PAREN_OPEN STAR PAREN_CLOSE
+		{ $$ = { size: $2 }; }
+	| size_float
+	;
+
+opt_size_float
+	: { $$ = {}; }
+	| float
+	;
+
+size_float
+	: PAREN_OPEN U_INT COMMA S_INT PAREN_CLOSE
+		{ $$ = { size: $2, precision: $4 }; }
+	| PAREN_OPEN U_INT COMMA U_INT PAREN_CLOSE
+		{ $$ = { size: $2, precision: $4 }; }
+	| PAREN_OPEN U_INT PAREN_CLOSE
+		{ $$ = { size: $2 }; }
+	;
+
+opt_size_typed
 	: { $$ = {}; }
 	| PAREN_OPEN U_INT BYTE PAREN_CLOSE
-		{ $$ = { value: $2, value_type: $3 }; }
+		{ $$ = { size: $2, size_type: $3 }; }
 	| PAREN_OPEN U_INT CHAR PAREN_CLOSE
-		{ $$ = { value: $2, value_type: $3 }; }
-	| uint
+		{ $$ = { size: $2, size_type: $3 }; }
+	| size
 	;
 
-opt_uint
+opt_size
 	: { $$ = {}; }
-	| uint
+	| size
 	;
 
-uint
+size
 	: PAREN_OPEN U_INT PAREN_CLOSE
-		{ $$ = { value: $2 }; }
-	;
-
-create_schema
-	: CREATE SCHEMA
-		{ $$ = { type: `${$1}_${$2}` }; }
+		{ $$ = { size: $2 }; }
 	;
 
 create_table
 	: CREATE TEMP TABLE
-		{ $$ = { type: `${$1}_${$3}`, temp: true }; }
+		{ $$ = { type: `CREATE_TABLE`, temp: true }; }
 	| CREATE TABLE
-		{ $$ = { type: `${$1}_${$2}` }; }
+		{ $$ = { type: `CREATE_TABLE` }; }
+	;
+
+create_schema
+	: CREATE SCHEMA
+		{ $$ = { type: `CREATE_SCHEMA` }; }
+	;
+
+drop_table
+	: DROP TEMP TABLE
+		{ $$ = { type: `DROP_TABLE`, temp: true }; }
+	| DROP TABLE
+		{ $$ = { type: `DROP_TABLE` }; }
 	;
 
 drop_schema
 	: DROP SCHEMA
-		{ $$ = { type: `${$1}_${$2}` }; }
+		{ $$ = { type: `DROP_SCHEMA` }; }
 	;
 
 use_schema
 	: USE
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'USE' }; }
 	;
 
 opt_PRECISION
