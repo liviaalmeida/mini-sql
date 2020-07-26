@@ -10,7 +10,7 @@ module.exports = {
   ],
   testEnvironment: "node",
   testMatch: [
-    "**/spec/**.spec.js"
+    "**/spec/**/**.spec.js"
   ],
 
   testPathIgnorePatterns: [
