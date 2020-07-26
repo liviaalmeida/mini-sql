@@ -252,95 +252,95 @@ foreign_reference
 
 datatype
 	: ENUM PAREN_OPEN list_strings PAREN_CLOSE opt_collation
-		{ $$ = { type: $1, enum: [ $string, $list_strings ], ...$opt_collation }; }
+		{ $$ = { type: 'ENUM', enum: [ $string, $list_strings ], ...$opt_collation }; }
 	| CHAR opt_size_typed opt_collation
-		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+		{ $$ = { type: 'CHAR', ...$opt_size_typed, ...$opt_collation }; }
 	| CHARACTER opt_size_typed opt_collation
-		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+		{ $$ = { type: 'CHARACTER', ...$opt_size_typed, ...$opt_collation }; }
 	| CHARACTER VARYING opt_size_typed opt_collation
-		{ $$ = { type: $1, varying: true, ...$opt_size_typed, ...$opt_collation }; }
+		{ $$ = { type: 'CHARACTER', varying: true, ...$opt_size_typed, ...$opt_collation }; }
 	| VARCHAR opt_size_typed opt_collation
-		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+		{ $$ = { type: 'VARCHAR', ...$opt_size_typed, ...$opt_collation }; }
 	| VARCHAR2 opt_size_typed opt_collation
-		{ $$ = { type: $1, ...$opt_size_typed, ...$opt_collation }; }
+		{ $$ = { type: 'VARCHAR2', ...$opt_size_typed, ...$opt_collation }; }
 	| DOUBLE opt_PRECISION opt_size_float
-		{ $$ = { type: $1, ...$opt_PRECISION, ...$opt_size_float }; }
+		{ $$ = { type: 'DOUBLE', ...$opt_PRECISION, ...$opt_size_float }; }
 	| CLOB opt_size opt_collation
-		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+		{ $$ = { type: 'CLOB', ...$opt_size, ...$opt_collation }; }
 	| LONG NVARCHAR opt_size opt_collation
-		{ $$ = { type: $2, long: true, ...$opt_size, ...$opt_collation }; }
+		{ $$ = { type: 'NVARCHAR', long: true, ...$opt_size, ...$opt_collation }; }
 	| LONG VARCHAR opt_size opt_collation
-		{ $$ = { type: $2, long: true, ...$opt_size, ...$opt_collation }; }
+		{ $$ = { type: 'VARCHAR', long: true, ...$opt_size, ...$opt_collation }; }
 	| NCHAR opt_size opt_collation
-		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+		{ $$ = { type: 'NCHAR', ...$opt_size, ...$opt_collation }; }
 	| NVARCHAR opt_size opt_collation
-		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+		{ $$ = { type: 'NVARCHAR', ...$opt_size, ...$opt_collation }; }
 	| TEXT opt_size opt_collation
-		{ $$ = { type: $1, ...$opt_size, ...$opt_collation }; }
+		{ $$ = { type: 'TEXT', ...$opt_size, ...$opt_collation }; }
 	| TIME opt_size opt_TIMEZONE
-		{ $$ = { type: $1, ...$opt_size, ...$opt_TIMEZONE }; }
+		{ $$ = { type: 'TIME', ...$opt_size, ...$opt_TIMEZONE }; }
 	| INT opt_size opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+		{ $$ = { type: 'INT', ...$opt_size, ...$opt_UNSIGNED }; }
 	| INTEGER opt_size opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+		{ $$ = { type: 'INTEGER', ...$opt_size, ...$opt_UNSIGNED }; }
 	| MEDIUMINT opt_size opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+		{ $$ = { type: 'MEDIUMINT', ...$opt_size, ...$opt_UNSIGNED }; }
 	| SMALLINT opt_size opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+		{ $$ = { type: 'SMALLINT', ...$opt_size, ...$opt_UNSIGNED }; }
 	| TINYINT opt_size opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_size, ...$opt_UNSIGNED }; }
+		{ $$ = { type: 'TINYINT', ...$opt_size, ...$opt_UNSIGNED }; }
 	| BIGINT opt_UNSIGNED
-		{ $$ = { type: $1, ...$opt_UNSIGNED }; }
+		{ $$ = { type: 'BIGINT', ...$opt_UNSIGNED }; }
 	| LONGTEXT opt_collation
-		{ $$ = { type: $1, ...$opt_collation }; }
+		{ $$ = { type: 'LONGTEXT', ...$opt_collation }; }
 	| MEDIUMTEXT opt_collation
-		{ $$ = { type: $1, ...$opt_collation }; }
+		{ $$ = { type: 'MEDIUMTEXT', ...$opt_collation }; }
 	| NCLOB opt_collation
-		{ $$ = { type: $1, ...$opt_collation }; }
+		{ $$ = { type: 'NCLOB', ...$opt_collation }; }
 	| TINYTEXT opt_collation
-		{ $$ = { type: $1, ...$opt_collation }; }
+		{ $$ = { type: 'TINYTEXT', ...$opt_collation }; }
 	| DECIMAL opt_size_decimal
-		{ $$ = { type: $1, ...$opt_size_decimal }; }
+		{ $$ = { type: 'DECIMAL', ...$opt_size_decimal }; }
 	| NUMBER opt_size_decimal
-		{ $$ = { type: $1, ...$opt_size_decimal }; }
+		{ $$ = { type: 'NUMBER', ...$opt_size_decimal }; }
 	| NUMERIC opt_size_decimal
-		{ $$ = { type: $1, ...$opt_size_decimal }; }
+		{ $$ = { type: 'NUMERIC', ...$opt_size_decimal }; }
 	| FLOAT opt_size_float
-		{ $$ = { type: $1, ...$opt_size_float }; }
+		{ $$ = { type: 'FLOAT', ...$opt_size_float }; }
 	| REAL opt_size_float
-		{ $$ = { type: $1, ...$opt_size_float }; }
+		{ $$ = { type: 'REAL', ...$opt_size_float }; }
 	| BINARY opt_size
-		{ $$ = { type: $1, ...$opt_size }; }
+		{ $$ = { type: 'BINARY', ...$opt_size }; }
 	| BIT opt_size
-		{ $$ = { type: $1, ...$opt_size }; }
+		{ $$ = { type: 'BIT', ...$opt_size }; }
 	| BLOB opt_size
-		{ $$ = { type: $1, ...$opt_size }; }
+		{ $$ = { type: 'BLOB', ...$opt_size }; }
 	| LONG VARBINARY opt_size
-		{ $$ = { type: $2, long: true, ...$opt_size }; }
+		{ $$ = { type: 'VARBINARY', long: true, ...$opt_size }; }
 	| TIMESTAMPTZ opt_size
-		{ $$ = { type: $1, ...$opt_size }; }
+		{ $$ = { type: 'TIMESTAMPTZ', ...$opt_size }; }
 	| TIMETZ opt_size
-		{ $$ = { type: $1, ...$opt_size }; }
+		{ $$ = { type: 'TIMETZ', ...$opt_size }; }
 	| VARBINARY opt_size
-		{ $$ = { type: $1, ...$opt_size }; }
+		{ $$ = { type: 'VARBINARY', ...$opt_size }; }
 	| ARRAY
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'ARRAY' }; }
 	| BOOL
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'BOOL' }; }
 	| BOOLEAN
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'BOOLEAN' }; }
 	| DATE
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'DATE' }; }
 	| LONGBLOB
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'LONGBLOB' }; }
 	| MEDIUMBLOB
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'MEDIUMBLOB' }; }
 	| OTHER
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'OTHER' }; }
 	| TINYBLOB
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'TINYBLOB' }; }
 	| UUID
-		{ $$ = { type: $1 }; }
+		{ $$ = { type: 'UUID' }; }
 	;
 
 opt_collation
