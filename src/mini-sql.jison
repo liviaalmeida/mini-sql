@@ -9,15 +9,19 @@
 '*'											return 'STAR'
 'TEMP'									return 'TEMP'
 'TEMPORARY'							return 'TEMP'
+'ADD'										return 'ADD'
 'ALTER'									return 'ALTER'
+'COMMIT'								return 'COMMIT'
 'CREATE'								return 'CREATE'
 'DROP'									return 'DROP'
-'USE'										return 'USE'
-'COMMIT'								return 'COMMIT'
-'ROLLBACK'							return 'ROLLBACK'
+'MODIFY'								return 'MODIFY'
 'RENAME'								return 'RENAME'
+'ROLLBACK'							return 'ROLLBACK'
+'USE'										return 'USE'
 'TO'										return 'TO'
 'AS'										return 'AS'
+'COLUMN'								return 'COLUMN'
+'DATA'									return 'DATA'
 'SCHEMA'								return 'SCHEMA'
 'TABLE'									return 'TABLE'
 'CONSTRAINT'						return 'CONSTRAINT'
@@ -82,10 +86,13 @@
 'PRECISION'							return 'PRECISION'
 'UNSIGNED'							return 'UNSIGNED'
 'OTHER'									return 'OTHER'
-'ZONE'									return 'ZONE'
+'COLLATE'								return 'COLLATE'
+'AFTER'									return 'AFTER'
+'BEFORE'								return 'BEFORE'
+'FIRST'									return 'FIRST'
 'WITH'									return 'WITH'
 'WITHOUT'								return 'WITHOUT'
-'COLLATE'								return 'COLLATE'
+'ZONE'									return 'ZONE'
 [a-zA-Z_][a-zA-Z0-9_]* 	return 'NAME'
 \d+											return 'U_INT'
 -\d+										return 'S_INT'
@@ -119,7 +126,7 @@ sql
 
 statements
 	: statements statement
-		{ $$ = [ ...$statements, ...$statement ]; }
+		{ $$ = [ ...$statements, $statement ]; }
 	| statement
 		{ $$ = [$statement]; }
 	;
@@ -132,7 +139,8 @@ statement
 	;
 
 ddl_statement
-	: alterschema_statement
+	: altertable_statement
+	| alterschema_statement
 	| createtable_statement
 	| createschema_statement
 	| droptable_statement
@@ -143,6 +151,11 @@ ddl_statement
 tcl_statement
 	: commit_statement
 	| rollback_statement
+	;
+
+altertable_statement
+	: ALTER TABLE NAME table_alteration
+		{ $$ = { alteration: $table_alteration, name: $3, type: 'ALTER_TABLE' }; }
 	;
 
 alterschema_statement
@@ -185,6 +198,61 @@ commit_statement
 rollback_statement
 	: ROLLBACK
 		{ $$ = { type: 'ROLLBACK' }; }
+	;
+
+table_alteration
+	: ADD CONSTRAINT opt_identifier constraint
+		{ $$ = { constraint: $constraint, type: 'ADD', ...$opt_identifier }; }
+	| ADD constraint
+		{ $$ = { constraint: $constraint, type: 'ADD' }; }
+	| ADD COLUMN column opt_column_placement
+		{ $$ = { column: $column, type: 'ADD', ...$opt_column_placement }; }
+	| ADD PAREN_OPEN table_constraints PAREN_CLOSE
+		{ $$ = { constraints: $table_constraints, type: 'ADD' }; }
+	| ALTER COLUMN identifier column_alteration
+		{ $$ = { alteration: $column_alteration, type: 'ALTER', ...$identifier }; }
+	| ALTER identifier column_alteration
+		{ $$ = { alteration: $column_alteration, type: 'ALTER', ...$identifier }; }
+	| ALTER column
+		{ $$ = { column: $column, type: 'ALTER' }; }
+	| ALTER PAREN_OPEN column PAREN_CLOSE
+		{ $$ = { column: $column, type: 'ALTER' }; }
+	| ALTER CONSTRAINT NAME
+		{ $$ = { constraint: $constraint, type: 'ALTER' }; }
+	| MODIFY COLUMN identifier column_alteration
+		{ $$ = { alteration: $column_alteration, type: 'MODIFY' }; }
+	| MODIFY identifier column_alteration
+		{ $$ = { alteration: $column_alteration, type: 'MODIFY' }; }
+	| MODIFY column
+		{ $$ = { column: $column, type: 'MODIFY' }; }
+	| MODIFY PAREN_OPEN column PAREN_CLOSE
+		{ $$ = { column: $column, type: 'MODIFY' }; }
+	| MODIFY CONSTRAINT NAME
+		{ $$ = { constraint: $3, type: 'MODIFY' }; }
+	| RENAME COLUMN identifier TO identifier
+		{ $$ = { column: { old_name: $3, name: $5 }, type: 'RENAME' }; }
+	| RENAME COLUMN identifier AS identifier
+		{ $$ = { column: { old_name: $3, name: $5 }, type: 'RENAME' }; }
+	| RENAME CONSTRAINT identifier TO identifier
+		{ $$ = { constraint: { old_name: $3, name: $5 }, type: 'RENAME' }; }
+	| RENAME CONSTRAINT identifier AS identifier
+		{ $$ = { constraint: { old_name: $3, name: $5 }, type: 'RENAME' }; }
+	| RENAME TO identifier
+		{ $$ = { name: $identifier, type: 'RENAME' }; }
+	| DROP COLUMN NAME
+		{ $$ = { column: $3, type: 'DROP' }; }
+	| DROP NAME
+		{ $$ = { column: $2, type: 'DROP' }; }
+	| DROP UNIQUE NAME
+		{ $$ = { unique: $3, type: 'DROP' }; }
+	| DROP FOREIGN KEY NAME
+		{ $$ = { foreign: $4, type: 'DROP' }; }
+	| DROP PRIMARY KEY NAME
+		{ $$ = { primary: $4, type: 'DROP' }; }
+	| DROP PRIMARY KEY
+		{ $$ = { primary: true, type: 'DROP' }; }
+	| DROP CONSTRAINT NAME
+		{ $$ = { constraint: $3, type: 'DROP' }; }
 	;
 
 table_constraints
@@ -243,6 +311,43 @@ column_constraint
 		{ $$ = { unique: true }; }
 	| REFERENCES foreign_reference
 		{ $$ = { foreign: $foreign_reference }; }
+	;
+
+opt_column_placement
+	: { $$ = {}; }
+	| FIRST
+		{ $$ = { first: true }; }
+	| BEFORE NAME
+		{ $$ = { before: $2 }; }
+	| AFTER NAME
+		{ $$ = { after: $2 }; }
+	;
+
+column_alteration
+	: SET DATA TYPE datatype NOT NULL
+		{ $$ = { constraints: { never_null: true }, ...$datatype }; }
+	| SET DATA TYPE datatype NULL
+		{ $$ = { constraints: { null_allowed: true }, ...$datatype }; }
+	| SET DATA TYPE datatype
+		{ $$ = { ...$datatype }; }
+	| SET NOT NULL
+		{ $$ = { constraints: { never_null: true } }; }
+	| SET NULL
+		{ $$ = { constraints: { null_allowed: true } }; }
+	| NULL
+		{ $$ = { constraints: { null_allowed: true } }; }
+	| TYPE datatype NOT NULL
+		{ $$ = { constraints: { never_null: true }, ...$datatype }; }
+	| TYPE datatype NULL
+		{ $$ = { constraints: { null_allowed: true }, ...$datatype }; }
+	| TYPE datatype
+		{ $$ = { ...$datatype }; }
+	| RENAME AS identifier
+		{ $$ = { rename: $identifier }; }
+	| RENAME TO identifier
+		{ $$ = { rename: $identifier }; }
+	| DROP NOT NULL
+		{ $$ = { constraints: { null_allowed: true } }; }
 	;
 
 foreign_reference
