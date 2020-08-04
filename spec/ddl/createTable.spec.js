@@ -88,7 +88,7 @@ const tables = {
 				{
 					column: {
 						constraints: { unique: true },
-						name: 'NAME', type: 'VARCHAR', size: '20'
+						name: 'NAME', size: '20', type: 'VARCHAR'
 					}
 				},
 				{
@@ -115,7 +115,6 @@ const tables = {
 		}
 	}
 }
-
 
 describe("CREATE TABLE command should return a command ", () => {
 	test('create table my_new_table', () => {
