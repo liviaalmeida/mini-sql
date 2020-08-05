@@ -1,6 +1,6 @@
 {
   "name": "mini-sql",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Minimal SQL interpreter written in JavaScript",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "bugs": {
     "url": "https://github.com/liviaalmeida/mini-sql/issues"
   },
-  "main": "dist/index.js",
+  "main": "index.js",
   "scripts": {
     "build": "jison .\\src\\mini-sql.jison -o mini-sql.js -m 'commonjs'",
     "test": "jest"
