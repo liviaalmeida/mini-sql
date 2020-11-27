@@ -81,42 +81,42 @@ const tables = {
 describe('ALTER TABLE command should return a command ', () => {
 	test('to alter table my_existing_table adding new column id', () => {
 		const { command, result } = tables['my_existing_table']
-		const { statement } = singleCommand(command)
+		const statement = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
 	})
 
 	test('to alter table customers adding two new columns, customer_name and state', () => {
 		const { command, result } = tables['customers']
-		const { statement } = singleCommand(command)
+		const statement = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
 	})
 
 	test('to alter table contacts modifying column last_name to be varchar(50) and allow NULL values', () => {
 		const { command, result } = tables['contacts']
-		const { statement } = singleCommand(command)
+		const statement = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
 	})
 
 	test('to alter table departments renaming column department_name to dept_name', () => {
 		const { command, result } = tables['departments']
-		const { statement } = singleCommand(command)
+		const statement = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
 	})
 
 	test('to alter table salaries renaming it to employees_salaries', () => {
 		const { command, result } = tables['salaries']
-		const { statement } = singleCommand(command)
+		const statement = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
 	})
 
 	test('to alter table d1 droping constraint check_age', () => {
 		const { command, result } = tables['d1']
-		const { statement } = singleCommand(command)
+		const statement = singleCommand(command)
 
 		expect(statement).toMatchObject(result)
 	})

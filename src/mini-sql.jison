@@ -133,9 +133,9 @@ statements
 
 statement
 	: ddl_statement EOS
-		{ $$ = { statement: $ddl_statement }; }
+		{ $$ = $ddl_statement; }
 	| tcl_statement EOS
-		{ $$ = { statement: $tcl_statement }; }
+		{ $$ = $tcl_statement; }
 	;
 
 ddl_statement
