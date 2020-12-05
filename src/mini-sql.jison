@@ -307,7 +307,7 @@ column_complement
 column_constraint
 	: PRIMARY KEY
 		{ $$ = { primary: true }; }
-	| UNIQUE KEY
+	| UNIQUE
 		{ $$ = { unique: true }; }
 	| REFERENCES foreign_reference
 		{ $$ = { foreign: $foreign_reference }; }
