@@ -154,40 +154,40 @@ tcl_statement
 	;
 
 altertable_statement
-	: ALTER TABLE NAME table_alteration
-		{ $$ = { alteration: $table_alteration, name: $3, type: 'ALTER_TABLE' }; }
+	: ALTER TABLE identifier table_alteration
+		{ $$ = { alteration: $table_alteration, name: $identifier, type: 'ALTER_TABLE' }; }
 	;
 
 alterschema_statement
-	: ALTER SCHEMA NAME RENAME TO NAME
+	: ALTER SCHEMA identifier RENAME TO identifier
 		{ $$ = { name: $6, old_name: $3, type: 'ALTER_SCHEMA' }; }
-	| ALTER SCHEMA NAME RENAME AS NAME
+	| ALTER SCHEMA identifier RENAME AS identifier
 		{ $$ = { name: $6, old_name: $3, type: 'ALTER_SCHEMA' }; }
 	;
 
 createtable_statement
-	: create_table NAME PAREN_OPEN table_constraints PAREN_CLOSE
-		{ $$ = { name: $2, constraints: $table_constraints, ...$create_table }; }
+	: create_table identifier PAREN_OPEN table_constraints PAREN_CLOSE
+		{ $$ = { name: $identifier, constraints: $table_constraints, ...$create_table }; }
 	;
 
 createschema_statement
-	: CREATE SCHEMA NAME
-		{ $$ = { name: $3, type: 'CREATE_SCHEMA' }; }
+	: CREATE SCHEMA identifier
+		{ $$ = { name: $identifier, type: 'CREATE_SCHEMA' }; }
 	;
 
 droptable_statement
-	: drop_table NAME
-		{ $$ = { name: $2, ...$drop_table }; }
+	: drop_table identifier
+		{ $$ = { name: $identifier, ...$drop_table }; }
 	;
 
 dropschema_statement
-	: DROP SCHEMA NAME
-		{ $$ = { name: $3, type: 'DROP_SCHEMA' }; }
+	: DROP SCHEMA identifier
+		{ $$ = { name: $identifier, type: 'DROP_SCHEMA' }; }
 	;
 
 useschema_statement
-	: USE NAME
-		{ $$ = { name: $2, type: 'USE' }; }
+	: USE identifier
+		{ $$ = { name: $identifier, type: 'USE' }; }
 	;
 
 commit_statement
@@ -217,8 +217,8 @@ table_alteration
 		{ $$ = { column: $column, type: 'ALTER' }; }
 	| ALTER PAREN_OPEN column PAREN_CLOSE
 		{ $$ = { column: $column, type: 'ALTER' }; }
-	| ALTER CONSTRAINT NAME
-		{ $$ = { constraint: $constraint, type: 'ALTER' }; }
+	| ALTER CONSTRAINT identifier
+		{ $$ = { constraint: $identifier, type: 'ALTER' }; }
 	| MODIFY COLUMN identifier column_alteration
 		{ $$ = { alteration: $column_alteration, type: 'MODIFY' }; }
 	| MODIFY identifier column_alteration
@@ -227,8 +227,8 @@ table_alteration
 		{ $$ = { column: $column, type: 'MODIFY' }; }
 	| MODIFY PAREN_OPEN column PAREN_CLOSE
 		{ $$ = { column: $column, type: 'MODIFY' }; }
-	| MODIFY CONSTRAINT NAME
-		{ $$ = { constraint: $3, type: 'MODIFY' }; }
+	| MODIFY CONSTRAINT identifier
+		{ $$ = { constraint: $identifier, type: 'MODIFY' }; }
 	| RENAME COLUMN identifier TO identifier
 		{ $$ = { column: { old_name: $3, name: $5 }, type: 'RENAME' }; }
 	| RENAME COLUMN identifier AS identifier
@@ -239,20 +239,20 @@ table_alteration
 		{ $$ = { constraint: { old_name: $3, name: $5 }, type: 'RENAME' }; }
 	| RENAME TO identifier
 		{ $$ = { name: $identifier, type: 'RENAME' }; }
-	| DROP COLUMN NAME
-		{ $$ = { column: $3, type: 'DROP' }; }
-	| DROP NAME
-		{ $$ = { column: $2, type: 'DROP' }; }
-	| DROP UNIQUE NAME
-		{ $$ = { unique: $3, type: 'DROP' }; }
-	| DROP FOREIGN KEY NAME
-		{ $$ = { foreign: $4, type: 'DROP' }; }
-	| DROP PRIMARY KEY NAME
-		{ $$ = { primary: $4, type: 'DROP' }; }
+	| DROP COLUMN identifier
+		{ $$ = { column: $identifier, type: 'DROP' }; }
+	| DROP identifier
+		{ $$ = { column: $identifier, type: 'DROP' }; }
+	| DROP UNIQUE identifier
+		{ $$ = { unique: $identifier, type: 'DROP' }; }
+	| DROP FOREIGN KEY identifier
+		{ $$ = { foreign: $identifier, type: 'DROP' }; }
+	| DROP PRIMARY KEY identifier
+		{ $$ = { primary: $identifier, type: 'DROP' }; }
 	| DROP PRIMARY KEY
 		{ $$ = { primary: true, type: 'DROP' }; }
-	| DROP CONSTRAINT NAME
-		{ $$ = { constraint: $3, type: 'DROP' }; }
+	| DROP CONSTRAINT identifier
+		{ $$ = { constraint: $identifier, type: 'DROP' }; }
 	;
 
 table_constraints
@@ -317,10 +317,10 @@ opt_column_placement
 	: { $$ = {}; }
 	| FIRST
 		{ $$ = { first: true }; }
-	| BEFORE NAME
-		{ $$ = { before: $2 }; }
-	| AFTER NAME
-		{ $$ = { after: $2 }; }
+	| BEFORE identifier
+		{ $$ = { before: $identifier }; }
+	| AFTER identifier
+		{ $$ = { after: $identifier }; }
 	;
 
 column_alteration
@@ -351,8 +351,8 @@ column_alteration
 	;
 
 foreign_reference
-	: NAME PAREN_OPEN list_identifiers PAREN_CLOSE
-		{ $$ = { table: $1, identifiers: $list_identifiers }; }
+	: identifier PAREN_OPEN list_identifiers PAREN_CLOSE
+		{ $$ = { table: $identifier, identifiers: $list_identifiers }; }
 	;
 
 datatype
