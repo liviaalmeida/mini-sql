@@ -11,7 +11,11 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "jison .\\src\\mini-sql.jison -o mini-sql.js -m 'commonjs'",
+		"build": "jison .\\src\\mini-sql.jison -o mini-sql.js -m 'commonjs'",
+		"build:test": "npm run build && npm run test",
+		"deploy:major": "(npm run build:test && npm version major) && npm publish",
+		"deploy:minor": "(npm run build:test && npm version minor) && npm publish",
+		"deploy:patch": "(npm run build:test && npm version patch) && npm publish",
     "test": "jest"
   },
   "keywords": [],
