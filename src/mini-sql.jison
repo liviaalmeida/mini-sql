@@ -1,4 +1,3 @@
-/* lexical grammar */
 %lex
 
 %options case-insensitive
@@ -14,9 +13,11 @@
 'COMMIT'								return 'COMMIT'
 'CREATE'								return 'CREATE'
 'DROP'									return 'DROP'
+'INSERT'								return 'INSERT'
 'MODIFY'								return 'MODIFY'
 'RENAME'								return 'RENAME'
 'ROLLBACK'							return 'ROLLBACK'
+'SELECT'								return 'SELECT'
 'USE'										return 'USE'
 'TO'										return 'TO'
 'AS'										return 'AS'
@@ -32,15 +33,17 @@
 'REFERENCES'						return 'REFERENCES'
 'NOT'										return 'NOT'
 'NULL'									return 'NULL'
+'NULLS'									return 'NULLS'
 'AUTO_INCREMENT'				return 'AUTO_INCREMENT'
 'AUTOINCREMENT'					return 'AUTO_INCREMENT'
+'['											return 'BRACKET_OPEN'
+']'											return 'BRACKET_CLOSE'
+'.'											return 'DOT'
 '('											return 'PAREN_OPEN'
 ')'											return 'PAREN_CLOSE'
 '"'											return 'QUOTE_DOUBLE'
 '\''										return 'QUOTE_SINGLE'
 '`'											return 'QUOTE_SINGLE_BENT'
-'['											return 'BRACKET_OPEN'
-']'											return 'BRACKET_CLOSE'
 'ARRAY'									return 'ARRAY'
 'BINARY'								return 'BINARY'
 'BIGINT'								return 'BIGINT'
@@ -88,8 +91,28 @@
 'OTHER'									return 'OTHER'
 'COLLATE'								return 'COLLATE'
 'AFTER'									return 'AFTER'
+'ALL'										return 'ALL'
+'AND'										return 'AND'
+'ANY'										return 'ANY'
+'ASC'										return 'ASC'
 'BEFORE'								return 'BEFORE'
+'DESC'									return 'DESC'
+'DISTINCT'							return 'DISTINCT'
+'EXCEPT'								return 'EXCEPT'
+'EXISTS'								return 'EXISTS'
 'FIRST'									return 'FIRST'
+'FROM'									return 'FROM'
+'INTERSECT'							return 'INTERSECT'
+'IN'										return 'IN'
+'IS'										return 'IS'
+'LAST'									return 'LAST'
+'MINUS'									return 'MINUS'
+'NOT'										return 'NOT'
+'OR'										return 'OR'
+'ORDER'									return 'ORDER'
+'SOME'									return 'SOME'
+'UNION'									return 'UNION'
+'WHERE'									return 'WHERE'
 'WITH'									return 'WITH'
 'WITHOUT'								return 'WITHOUT'
 'ZONE'									return 'ZONE'
@@ -101,23 +124,12 @@
 <<EOF>>      			     	return 'EOF'
 .*											return 'CHARS'
 
+
 /lex
-
-/* operator associations and precedence */
-
-// %left 'OR'
-// %left 'AND'
-%left 'NOT'
-// %left '+' '-'
-// %left '*' '/'
-// %left '^'
-// %right '!'
-// %right '%'
-// %left UMINUS
 
 %start sql
 
-%% /* language grammar */
+%%
 
 sql
 	: statements EOF
@@ -134,6 +146,8 @@ statements
 statement
 	: ddl_statement EOS
 		{ $$ = $ddl_statement; }
+	| dml_statement EOS
+		{ $$ = $dml_statement; }
 	| tcl_statement EOS
 		{ $$ = $tcl_statement; }
 	;
@@ -146,6 +160,10 @@ ddl_statement
 	| droptable_statement
 	| dropschema_statement
 	| useschema_statement
+	;
+
+dml_statement
+	: select_statement
 	;
 
 tcl_statement
@@ -188,6 +206,11 @@ dropschema_statement
 useschema_statement
 	: USE identifier
 		{ $$ = { name: $identifier, type: 'USE' }; }
+	;
+
+select_statement
+	: opt_with query opt_order_by
+		{ $$ = { query: $query, type: 'SELECT', ...$opt_with, ...$opt_order_by }; }
 	;
 
 commit_statement
@@ -454,6 +477,165 @@ opt_collation
 		{ $$ = { collation: $2 }; }
 	;
 
+opt_with
+	: { $$ = {}; }
+	| WITH RECURSIVE list_identifiers_as
+		{ $$ = { with: [ ...$list_identifiers_as ], recursive: true }; }
+	| WITH list_identifiers_as
+		{ $$ = { with: [ ...$list_identifiers_as ] }; }
+	;
+
+query
+	: query_term opt_query_ops
+		{ $$ = { term: $query_term, ...$opt_query_ops }; }
+	;
+
+opt_order_by
+	: { $$ = {}; }
+	| ORDER BY sort_fields
+		{ $$ = {  }; }
+	;
+
+list_identifiers_as
+	: list_identifiers_as COMMA identifier_as
+		{ $$ = [ ...$list_identifiers_as, $identifier_as ]; }
+	| identifier_as
+		{ $$ = [$identifier_as]; }
+	;
+
+identifier_as
+	: identifier PAREN_OPEN list_identifiers PAREN_CLOSE AS PAREN_OPEN select_statement PAREN_CLOSE
+		{ $$ = { name: $identifier, as: $select_statement, columns: $list_identifiers }; }
+	| identifier AS PAREN_OPEN select_statement PAREN_CLOSE
+		{ $$ = { name: $identifier, as: $select_statement }; }
+	;
+
+query_term
+	: query_select opt_query_intersects
+		{ $$ = { select: $query_select, ...$opt_query_intersects }; }
+	;
+
+opt_query_ops
+	:	{ $$ = {}; }
+	| query_ops
+		{ $$ = { ops: $query_ops }; }
+	;
+
+query_ops
+	:	query_ops query_op
+		{ $$ = [ ...$query_ops, $query_op ]; }
+	| query_op
+		{ $$ = [$query_op]; }
+	;
+
+query_op
+	: EXCEPT opt_ALL_or_DISTINCT query_term
+		{ $$ = { except: $query_term, ...$opt_ALL_or_DISTINCT }; }
+	| MINUS opt_ALL_or_DISTINCT query_term
+		{ $$ = { minus: $query_term, ...$opt_ALL_or_DISTINCT }; }
+	| UNION opt_ALL_or_DISTINCT query_term
+		{ $$ = { union: $query_term, ...$opt_ALL_or_DISTINCT }; }
+	;
+
+sort_fields
+	: field ASC NULLS FIRST
+	| field ASC NULLS LAST
+	| field DESC NULLS FIRST
+	| field DESC NULLS LAST
+	| field
+	;
+
+query_select
+	: PAREN_OPEN select_statement PAREN_CLOSE
+		{ $$ = { select: $select_statement }; }
+	| SELECT select_list opt_select_condition
+		{ $$ = { list: $select_list, ...$opt_select_condition }; }
+	;
+
+opt_query_intersects
+	:	{ $$ = {}; }
+	| query_intersects
+		{ $$ = { intersects: $query_intersects }; }
+	;
+
+query_intersects
+	:	query_intersects query_intersect
+		{ $$ = [ ...$query_intersects, $query_intersect ]; }
+	|	query_intersect
+		{ $$ = [$query_intersect]; }
+	;
+
+query_intersect
+	:	INTERSECT opt_ALL_or_DISTINCT query_select
+		{ $$ = { intersect: $query_select, ...$opt_ALL_or_DISTINCT }; }
+	;
+
+select_list
+	: select_list COMMA select_field
+		{ $$ = [ ...$select_list, $select_field ]; }
+	| select_field
+		{ $$ = [$select_field]; }
+	;
+
+opt_select_condition
+	: { $$ = {}; }
+	| select_condition
+		{ $$ = { ...$select_condition } }
+	;
+
+select_condition
+	: FROM identifier WHERE field
+		{ $$ = { from: $identifier, where: $field }; }
+	| FROM identifier
+		{ $$ = { from: $identifier }; }
+	| WHERE field
+		{ $$ = { where: $field }; }
+	;
+
+select_field
+	: STAR
+		{ $$ = { star: true }; }
+	| identifier DOT STAR
+		{ $$ = { star: true, from: $identifier }; }
+	| field AS identifier
+		{ $$ = { field: $field, as: $identifier }; }
+	| field identifier
+		{ $$ = { field: $field, as: $identifier }; }
+	| field
+		{ $$ = { field: $field }; }
+	;
+
+field
+	: or
+		{ $$ = { ...$or }; }
+	;
+
+or
+	: or OR and
+		{ $$ = { or: [ $or, $and ] }; }
+	| and
+		{ $$ = { ...$and }; }
+	;
+
+and
+	: and AND not
+		{ $$ = { and: [ $and, $not ] }; }
+	| not
+		{ $$ = { ...$not }; }
+	;
+
+not
+	: opt_NOT predicate
+		{ $$ = { ...$predicate, ...$opt_NOT }; }
+	;
+
+predicate
+	: EXISTS PAREN_OPEN select_statement PAREN_CLOSE
+		{ $$ = { exists: $select_statement }; }
+	| UNIQUE PAREN_OPEN select_statement PAREN_CLOSE
+		{ $$ = { unique: $select_statement }; }
+	;
+
 list_identifiers
 	: list_identifiers COMMA identifier
 		{ $$ = [ ...$list_identifiers, $identifier ]; }
@@ -548,6 +730,20 @@ drop_table
 		{ $$ = { type: `DROP_TABLE`, temp: true }; }
 	| DROP TABLE
 		{ $$ = { type: `DROP_TABLE` }; }
+	;
+
+opt_ALL_or_DISTINCT
+	: { $$ = {}; }
+	| ALL
+		{ $$ = { all: true }; }
+	| DISTINCT
+		{ $$ = { distinct: true }; }
+	;
+
+opt_NOT
+	: { $$ = {}; }
+	| NOT
+		{ $$ = { not: true }; }
 	;
 
 opt_PRECISION
