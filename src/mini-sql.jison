@@ -492,8 +492,8 @@ query
 
 opt_order_by
 	: { $$ = {}; }
-	| ORDER BY sort_fields
-		{ $$ = {  }; }
+	| ORDER BY list_sort_fields
+		{ $$ = { order_by: $list_sort_fields }; }
 	;
 
 list_identifiers_as
@@ -537,12 +537,24 @@ query_op
 		{ $$ = { union: $query_term, ...$opt_ALL_or_DISTINCT }; }
 	;
 
-sort_fields
+list_sort_fields
+	: list_sort_fields COMMA sort_field
+		{ $$ = [ ...$list_sort_fields, $sort_field]; }
+	| sort_field
+		{ $$ = [$sort_field]; }
+	;
+
+sort_field
 	: field ASC NULLS FIRST
+		{ $$ = { field: { asc: true, nulls_first: true, ...$field } }; }
 	| field ASC NULLS LAST
+		{ $$ = { field: { asc: true, nulls_last: true, ...$field } }; }
 	| field DESC NULLS FIRST
+		{ $$ = { field: { desc: true, nulls_first: true, ...$field } }; }
 	| field DESC NULLS LAST
+		{ $$ = { field: { desc: true, nulls_last: true, ...$field } }; }
 	| field
+		{ $$ = { field: { ...$field } }; }
 	;
 
 query_select
