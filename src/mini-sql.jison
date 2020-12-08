@@ -112,6 +112,7 @@
 'ORDER'									return 'ORDER'
 'SOME'									return 'SOME'
 'UNION'									return 'UNION'
+'VALUES'								return 'VALUES'
 'WHERE'									return 'WHERE'
 'WITH'									return 'WITH'
 'WITHOUT'								return 'WITHOUT'
@@ -172,45 +173,47 @@ tcl_statement
 	;
 
 altertable_statement
-	: ALTER TABLE identifier table_alteration
-		{ $$ = { alteration: $table_alteration, name: $identifier, type: 'ALTER_TABLE' }; }
+	: ALTER TABLE name table_alteration
+		{ $$ = { alteration: $table_alteration, name: $name, type: 'ALTER_TABLE' }; }
 	;
 
 alterschema_statement
-	: ALTER SCHEMA identifier RENAME TO identifier
+	: ALTER SCHEMA name RENAME TO name
 		{ $$ = { name: $6, old_name: $3, type: 'ALTER_SCHEMA' }; }
-	| ALTER SCHEMA identifier RENAME AS identifier
+	| ALTER SCHEMA name RENAME AS name
 		{ $$ = { name: $6, old_name: $3, type: 'ALTER_SCHEMA' }; }
 	;
 
 createtable_statement
-	: create_table identifier PAREN_OPEN table_constraints PAREN_CLOSE
-		{ $$ = { name: $identifier, constraints: $table_constraints, ...$create_table }; }
+	: create_table name PAREN_OPEN table_constraints PAREN_CLOSE
+		{ $$ = { name: $name, constraints: $table_constraints, ...$create_table }; }
 	;
 
 createschema_statement
-	: CREATE SCHEMA identifier
-		{ $$ = { name: $identifier, type: 'CREATE_SCHEMA' }; }
+	: CREATE SCHEMA name
+		{ $$ = { name: $name, type: 'CREATE_SCHEMA' }; }
 	;
 
 droptable_statement
-	: drop_table identifier
-		{ $$ = { name: $identifier, ...$drop_table }; }
+	: drop_table name
+		{ $$ = { name: $name, ...$drop_table }; }
 	;
 
 dropschema_statement
-	: DROP SCHEMA identifier
-		{ $$ = { name: $identifier, type: 'DROP_SCHEMA' }; }
+	: DROP SCHEMA name
+		{ $$ = { name: $name, type: 'DROP_SCHEMA' }; }
 	;
 
 useschema_statement
-	: USE identifier
-		{ $$ = { name: $identifier, type: 'USE' }; }
+	: USE name
+		{ $$ = { name: $name, type: 'USE' }; }
 	;
 
 select_statement
 	: opt_with query opt_order_by
 		{ $$ = { query: $query, type: 'SELECT', ...$opt_with, ...$opt_order_by }; }
+	| values
+		{ $$ = { values: $values, type: 'SELECT' } }
 	;
 
 commit_statement
@@ -295,10 +298,10 @@ table_constraint
 	;
 
 constraint
-	: PRIMARY KEY PAREN_OPEN list_identifiers PAREN_CLOSE
-		{ $$ = { primary: $list_identifiers }; }
-	| FOREIGN KEY PAREN_OPEN list_identifiers PAREN_CLOSE REFERENCES foreign_reference
-		{ $$ = { foreign: $list_identifiers, reference: $foreign_reference}; }
+	: PRIMARY KEY PAREN_OPEN list_names PAREN_CLOSE
+		{ $$ = { primary: $list_names }; }
+	| FOREIGN KEY PAREN_OPEN list_names PAREN_CLOSE REFERENCES foreign_reference
+		{ $$ = { foreign: $list_names, reference: $foreign_reference}; }
 	;
 
 column
@@ -374,8 +377,8 @@ column_alteration
 	;
 
 foreign_reference
-	: identifier PAREN_OPEN list_identifiers PAREN_CLOSE
-		{ $$ = { table: $identifier, identifiers: $list_identifiers }; }
+	: name PAREN_OPEN list_names PAREN_CLOSE
+		{ $$ = { table: $name, identifiers: $list_names }; }
 	;
 
 datatype
@@ -473,8 +476,8 @@ datatype
 
 opt_collation
 	: { $$ = {}; }
-	| COLLATE NAME
-		{ $$ = { collation: $2 }; }
+	| COLLATE name
+		{ $$ = { collation: $name }; }
 	;
 
 opt_with
@@ -494,6 +497,11 @@ opt_order_by
 	: { $$ = {}; }
 	| ORDER BY list_sort_fields
 		{ $$ = { order_by: $list_sort_fields }; }
+	;
+
+values
+	: VALUES enclosed_fields_list
+		{ $$ = [ ...$enclosed_fields_list ]; }
 	;
 
 list_identifiers_as
@@ -557,6 +565,13 @@ sort_field
 		{ $$ = { field: { ...$field } }; }
 	;
 
+enclosed_fields_list
+	: enclosed_fields_list COMMA PAREN_OPEN fields_list PAREN_CLOSE
+		{ $$ = [ ...$enclosed_fields_list, $fields_list ]; }
+	| PAREN_OPEN fields_list PAREN_CLOSE
+		{ $$ = [$fields_list]; }
+	;
+
 query_select
 	: PAREN_OPEN select_statement PAREN_CLOSE
 		{ $$ = { select: $select_statement }; }
@@ -596,10 +611,10 @@ opt_select_condition
 	;
 
 select_condition
-	: FROM identifier WHERE field
-		{ $$ = { from: $identifier, where: $field }; }
-	| FROM identifier
-		{ $$ = { from: $identifier }; }
+	: FROM name WHERE field
+		{ $$ = { from: $name, where: $field }; }
+	| FROM name
+		{ $$ = { from: $name }; }
 	| WHERE field
 		{ $$ = { where: $field }; }
 	;
@@ -607,14 +622,21 @@ select_condition
 select_field
 	: STAR
 		{ $$ = { star: true }; }
-	| identifier DOT STAR
-		{ $$ = { star: true, from: $identifier }; }
+	| name DOT STAR
+		{ $$ = { star: true, from: $name }; }
 	| field AS identifier
 		{ $$ = { field: $field, as: $identifier }; }
 	| field identifier
 		{ $$ = { field: $field, as: $identifier }; }
 	| field
 		{ $$ = { field: $field }; }
+	;
+
+fields_list
+	: fields_list COMMA field
+		{ $$ = [ ...$fields_list, $field]; }
+	| field
+		{ $$ = [$field]; }
 	;
 
 field
@@ -646,6 +668,20 @@ predicate
 		{ $$ = { exists: $select_statement }; }
 	| UNIQUE PAREN_OPEN select_statement PAREN_CLOSE
 		{ $$ = { unique: $select_statement }; }
+	;
+
+list_names
+	: list_names COMMA name
+		{ $$ = [ ...$list_names, $name ]; }
+	| name
+		{ $$ = [$name]; }
+	;
+
+name
+	: name DOT identifier
+		{ $$ = `${$name}.${$identifier}`; }
+	| identifier
+		{ $$ = $identifier; }
 	;
 
 list_identifiers
