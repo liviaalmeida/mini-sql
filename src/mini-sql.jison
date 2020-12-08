@@ -40,7 +40,6 @@
 'b\''										return 'BINARY_OPEN'
 '['											return 'BRACKET_OPEN'
 ']'											return 'BRACKET_CLOSE'
-'.'											return 'DOT'
 '('											return 'PAREN_OPEN'
 ')'											return 'PAREN_CLOSE'
 '"'											return 'QUOTE_DOUBLE'
@@ -123,9 +122,12 @@
 'WITHOUT'								return 'WITHOUT'
 'ZONE'									return 'ZONE'
 [a-zA-Z_][a-zA-Z0-9_]* 	return 'NAME'
+\-\d+\.\d+								return 'S_REAL'
+\d+\.\d+								return 'U_REAL'
 \d+											return 'U_INT'
--\d+										return 'S_INT'
+\-\d+										return 'S_INT'
 ','											return 'COMMA'
+'.'											return 'DOT'
 ';'         			     	return 'EOS'
 <<EOF>>      			     	return 'EOF'
 .*											return 'CHARS'
@@ -317,6 +319,8 @@ constraint
 		{ $$ = { primary: $list_names }; }
 	| FOREIGN KEY PAREN_OPEN list_names PAREN_CLOSE REFERENCES foreign_reference
 		{ $$ = { foreign: $list_names, reference: $foreign_reference}; }
+	| UNIQUE PAREN_OPEN list_names PAREN_CLOSE
+		{ $$ = { unique: $list_names }; }
 	;
 
 column
@@ -679,8 +683,11 @@ term
 	: name
 	| string
 	| binary
-	| U_INT
 	| S_INT
+	| U_INT
+	| S_REAL
+	| U_REAL
+	| NULL
 	;
 
 or
