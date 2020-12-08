@@ -318,7 +318,7 @@ constraint
 	: PRIMARY KEY PAREN_OPEN list_names PAREN_CLOSE
 		{ $$ = { primary: $list_names }; }
 	| FOREIGN KEY PAREN_OPEN list_names PAREN_CLOSE REFERENCES foreign_reference
-		{ $$ = { foreign: $list_names, reference: $foreign_reference}; }
+		{ $$ = { foreign: { keys: $list_names, ...$foreign_reference } }; }
 	| UNIQUE PAREN_OPEN list_names PAREN_CLOSE
 		{ $$ = { unique: $list_names }; }
 	;
