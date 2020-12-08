@@ -96,6 +96,7 @@
 'ANY'										return 'ANY'
 'ASC'										return 'ASC'
 'BEFORE'								return 'BEFORE'
+'BY'										return 'BY'
 'DESC'									return 'DESC'
 'DISTINCT'							return 'DISTINCT'
 'EXCEPT'								return 'EXCEPT'
@@ -490,7 +491,7 @@ opt_with
 
 query
 	: query_term opt_query_ops
-		{ $$ = { term: $query_term, ...$opt_query_ops }; }
+		{ $$ = { ...$query_term, ...$opt_query_ops }; }
 	;
 
 opt_order_by
@@ -554,15 +555,19 @@ list_sort_fields
 
 sort_field
 	: field ASC NULLS FIRST
-		{ $$ = { field: { asc: true, nulls_first: true, ...$field } }; }
+		{ $$ = { field: $field, asc: true, nulls_first: true }; }
 	| field ASC NULLS LAST
-		{ $$ = { field: { asc: true, nulls_last: true, ...$field } }; }
+		{ $$ = { field: $field, asc: true, nulls_last: true }; }
+	| field ASC
+		{ $$ = { field: $field, asc: true }; }
 	| field DESC NULLS FIRST
-		{ $$ = { field: { desc: true, nulls_first: true, ...$field } }; }
+		{ $$ = { field: $field, desc: true, nulls_first: true }; }
 	| field DESC NULLS LAST
-		{ $$ = { field: { desc: true, nulls_last: true, ...$field } }; }
+		{ $$ = { field: $field, desc: true, nulls_last: true }; }
+	| field DESC
+		{ $$ = { field: $field, desc: true }; }
 	| field
-		{ $$ = { field: { ...$field } }; }
+		{ $$ = { field: $field }; }
 	;
 
 enclosed_fields_list
@@ -642,6 +647,7 @@ fields_list
 field
 	: or
 		{ $$ = { ...$or }; }
+	| name
 	;
 
 or
