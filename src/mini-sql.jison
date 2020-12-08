@@ -4,6 +4,7 @@
 
 %%
 
+\'(\\\'|.)*?\'							    return 'STRING_LITERAL'
 \s+                   	/* skip whitespace */
 '*'											return 'STAR'
 'TEMP'									return 'TEMP'
@@ -97,6 +98,7 @@
 'ASC'										return 'ASC'
 'BEFORE'								return 'BEFORE'
 'BY'										return 'BY'
+'DEFAULT'								return 'DEFAULT'
 'DESC'									return 'DESC'
 'DISTINCT'							return 'DISTINCT'
 'EXCEPT'								return 'EXCEPT'
@@ -105,6 +107,7 @@
 'FROM'									return 'FROM'
 'INTERSECT'							return 'INTERSECT'
 'IN'										return 'IN'
+'INTO'									return 'INTO'
 'IS'										return 'IS'
 'LAST'									return 'LAST'
 'MINUS'									return 'MINUS'
@@ -166,6 +169,7 @@ ddl_statement
 
 dml_statement
 	: select_statement
+	| insert_statement
 	;
 
 tcl_statement
@@ -214,7 +218,16 @@ select_statement
 	: opt_with query opt_order_by
 		{ $$ = { query: $query, type: 'SELECT', ...$opt_with, ...$opt_order_by }; }
 	| values
-		{ $$ = { values: $values, type: 'SELECT' } }
+		{ $$ = { values: $values, type: 'SELECT' }; }
+	;
+
+insert_statement
+	: opt_with INSERT opt_INTO insert_reference values
+		{ $$ = { reference: $insert_reference, values: $values, type: 'INSERT', ...$opt_with }; }
+	| opt_with INSERT opt_INTO insert_reference DEFAULT VALUES
+		{ $$ = { reference: $insert_reference, default: true, type: 'INSERT', ...$opt_with }; }
+	| opt_with INSERT opt_INTO insert_reference insert_select
+		{ $$ = { reference: $insert_reference, default: true, type: 'INSERT', ...$opt_with }; }
 	;
 
 commit_statement
@@ -500,6 +513,19 @@ opt_order_by
 		{ $$ = { order_by: $list_sort_fields }; }
 	;
 
+insert_reference
+	: PAREN_OPEN select_statement PAREN_CLOSE opt_as_identifier opt_enclosed_list_identifiers
+		{ $$ = { select: $select_statement, ...$opt_as_identifier, ...$opt_enclosed_list_identifiers }; }
+	| name opt_as_identifier opt_enclosed_list_identifiers
+		{ $$ = { name: $name, ...$opt_as_identifier, ...$opt_enclosed_list_identifiers }; }
+	;
+
+insert_select
+	: opt_with SELECT select_list opt_select_condition opt_query_intersects opt_query_ops opt_order_by
+		{ $$ = { list: $select_list, ...$opt_select_condition, ...$opt_query_intersects,
+		...$opt_query_ops, ...$opt_order_by }; }
+	;
+
 values
 	: VALUES enclosed_fields_list
 		{ $$ = [ ...$enclosed_fields_list ]; }
@@ -612,7 +638,7 @@ select_list
 opt_select_condition
 	: { $$ = {}; }
 	| select_condition
-		{ $$ = { ...$select_condition } }
+		{ $$ = { ...$select_condition }; }
 	;
 
 select_condition
@@ -629,12 +655,8 @@ select_field
 		{ $$ = { star: true }; }
 	| name DOT STAR
 		{ $$ = { star: true, from: $name }; }
-	| field AS identifier
-		{ $$ = { field: $field, as: $identifier }; }
-	| field identifier
-		{ $$ = { field: $field, as: $identifier }; }
-	| field
-		{ $$ = { field: $field }; }
+	| field opt_as_identifier
+		{ $$ = { field: $field, ...$opt_as_identifier }; }
 	;
 
 fields_list
@@ -648,6 +670,9 @@ field
 	: or
 		{ $$ = { ...$or }; }
 	| name
+	| string
+	| U_INT
+	| S_INT
 	;
 
 or
@@ -690,6 +715,20 @@ name
 		{ $$ = $identifier; }
 	;
 
+opt_as_identifier
+	: { $$ = {}; }
+	| AS identifier
+		{ $$ = { as: $identifier }; }
+	| identifier
+		{ $$ = { as: $identifier }; }
+	;
+
+opt_enclosed_list_identifiers
+	: { $$ = {}; }
+	| PAREN_OPEN list_identifiers PAREN_CLOSE
+		{ $$ = { identifiers: $list_identifiers }; }
+	;
+
 list_identifiers
 	: list_identifiers COMMA identifier
 		{ $$ = [ ...$list_identifiers, $identifier ]; }
@@ -722,8 +761,8 @@ list_strings
 	;
 
 string
-	: QUOTE_SINGLE CHARS QUOTE_SINGLE
-		{ $$ = $2; }
+	: STRING_LITERAL
+		{ $$ = $1; }
 	;
 
 opt_size_decimal
@@ -792,6 +831,12 @@ opt_ALL_or_DISTINCT
 		{ $$ = { all: true }; }
 	| DISTINCT
 		{ $$ = { distinct: true }; }
+	;
+
+opt_INTO
+	: { $$ = {}; }
+	| INTO
+		{ $$ = {}; }
 	;
 
 opt_NOT
