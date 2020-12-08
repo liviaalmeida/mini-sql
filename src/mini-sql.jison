@@ -4,7 +4,7 @@
 
 %%
 
-\'(\\\'|.)*?\'							    return 'STRING_LITERAL'
+\'(\\\'|.)*?\'					return 'STRING_LITERAL'
 \s+                   	/* skip whitespace */
 '*'											return 'STAR'
 'TEMP'									return 'TEMP'
@@ -37,6 +37,7 @@
 'NULLS'									return 'NULLS'
 'AUTO_INCREMENT'				return 'AUTO_INCREMENT'
 'AUTOINCREMENT'					return 'AUTO_INCREMENT'
+'b\''										return 'BINARY_OPEN'
 '['											return 'BRACKET_OPEN'
 ']'											return 'BRACKET_CLOSE'
 '.'											return 'DOT'
@@ -336,6 +337,8 @@ column_complement
 		{ $$ = { ...$column_constraint, ...$opt_identifier }; }
 	| column_constraint
 		{ $$ = { ...$column_constraint }; }
+	| DEFAULT term
+		{ $$ = { default: $term }; }
 	| NOT NULL
 		{ $$ = { never_null: true }; }
 	| NULL
@@ -669,8 +672,13 @@ fields_list
 field
 	: or
 		{ $$ = { ...$or }; }
-	| name
+	| term
+	;
+
+term
+	: name
 	| string
+	| binary
 	| U_INT
 	| S_INT
 	;
@@ -763,6 +771,11 @@ list_strings
 string
 	: STRING_LITERAL
 		{ $$ = $1; }
+	;
+
+binary
+	: BINARY_OPEN U_INT QUOTE_SINGLE
+		{ $$ = `${$2}`; }
 	;
 
 opt_size_decimal
