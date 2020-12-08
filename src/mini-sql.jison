@@ -122,7 +122,7 @@
 'WITHOUT'								return 'WITHOUT'
 'ZONE'									return 'ZONE'
 [a-zA-Z_][a-zA-Z0-9_]* 	return 'NAME'
-\-\d+\.\d+								return 'S_REAL'
+\-\d+\.\d+							return 'S_REAL'
 \d+\.\d+								return 'U_REAL'
 \d+											return 'U_INT'
 \-\d+										return 'S_INT'
