@@ -1,6 +1,6 @@
 {
   "name": "mini-sql",
-  "version": "0.19.2",
+  "version": "0.19.3",
   "description": "Minimal SQL interpreter written in JavaScript",
   "repository": {
     "type": "git",
