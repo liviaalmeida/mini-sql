@@ -8,13 +8,13 @@ module.exports = {
   setupFiles: [
     './spec/jest.setup.js'
   ],
-  testEnvironment: "node",
+  testEnvironment: 'node',
   testMatch: [
-    "**/spec/**/**.spec.js"
+    '**/spec/**/**.spec.js'
   ],
 
   testPathIgnorePatterns: [
-    "\\\\node_modules\\\\"
+    '\\\\node_modules\\\\'
   ],
   verbose: true
 };
