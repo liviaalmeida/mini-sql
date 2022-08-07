@@ -10,6 +10,7 @@
     "url": "https://github.com/liviaalmeida/mini-sql/issues"
   },
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "jison .\\src\\mini-sql.jison -o mini-sql.js -m 'commonjs'",
     "build:test": "npm run build && npm run test",
@@ -28,6 +29,7 @@
     "jest": "^25.2.2"
   },
   "files": [
-    "mini-sql.js"
+    "mini-sql.js",
+    "index.d.ts"
   ]
 }
