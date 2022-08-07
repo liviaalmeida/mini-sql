@@ -1,4 +1,4 @@
-declare namespace miniSQL {
+export declare namespace miniSQL {
   interface Column {
     name: string;
     type: string;
@@ -46,6 +46,19 @@ declare namespace miniSQL {
   }
   
   type SqlCommand = CreateTable | Insert
+
+  interface ParseError {
+    expected: string[];
+    line: number;
+    loc: {
+      first_column: number;
+      first_line: number;
+      last_column: number;
+      last_line: number;
+    };
+    text: string;
+    token: string;
+  }
 
   interface Parser {
     parse: (input: string) => SqlCommand[];
