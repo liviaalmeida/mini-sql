@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 const tables = {
   'my_new_table': {
     command: 'CREATE TABLE my_new_table (ID INT NOT NULL);',

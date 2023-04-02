@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 const tables = {
   'contacts': {
     command: 'ALTER TABLE contacts MODIFY last_name varchar(50) NULL;',

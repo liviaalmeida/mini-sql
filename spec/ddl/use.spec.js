@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 describe('USE command should return a command ', () => {
   test('use schema my_new_schema', () => {
     const statement = singleCommand('USE my_new_schema;')

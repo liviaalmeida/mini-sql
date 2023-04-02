@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 describe('DROP SCHEMA command should return a command ', () => {
   test('drop schema for my_new_schema', () => {
     const statement = singleCommand('DROP SCHEMA my_new_schema;')

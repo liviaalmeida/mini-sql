@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 const tables = {
   'posters': {
     command: 'select * from posters where exists (select id from commenters);',

@@ -1,2 +1,2 @@
-const parser = require('./mini-sql').parser
+import { parser } from './mini-sql'
 export default parser

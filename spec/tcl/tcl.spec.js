@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 describe('TCL command ', () => {
   test('commit should work', () => {
     const statement = singleCommand('commit;')

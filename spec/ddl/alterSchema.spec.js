@@ -1,3 +1,5 @@
+import { describe, expect, test } from 'vitest'
+
 describe('ALTER SCHEMA command should return a command ', () => {
   test('to alter schema old_schema to new_schema', () => {
     const statement = singleCommand('ALTER SCHEMA old_schema RENAME TO new_schema;')
