@@ -1,6 +1,6 @@
 {
   "name": "mini-sql",
-  "version": "0.21.0",
+  "version": "0.21.1",
   "type": "module",
   "description": "Minimal SQL interpreter written in JavaScript",
   "repository": {
@@ -13,7 +13,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "build": "jison-es .\\src\\mini-sql.jison -o mini-sql.js -m 'es'",
+    "build": "jiwson .\\src\\mini-sql.jison -o mini-sql.js -m es6",
     "build:test": "npm run build && npm run test",
     "deploy:major": "(npm run build:test && npm version major) && npm publish",
     "deploy:minor": "(npm run build:test && npm version minor) && npm publish",
@@ -24,7 +24,7 @@
   "author": "Lívia Almeida <leave.ah@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "jison-es": "^0.4.18"
+    "jiwson": "^0.1.1"
   },
   "devDependencies": {
     "vitest": "^0.29.8"
