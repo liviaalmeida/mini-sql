@@ -14,10 +14,10 @@
   "types": "index.d.ts",
   "scripts": {
     "build": "jiwson .\\src\\mini-sql.jison -o mini-sql.js -m es6",
-    "build:test": "npm run build && npm run test",
-    "deploy:major": "(npm run build:test && npm version major) && npm publish",
-    "deploy:minor": "(npm run build:test && npm version minor) && npm publish",
-    "deploy:patch": "(npm run build:test && npm version patch) && npm publish",
+    "build:test": "yarn build && yarn test",
+    "deploy:major": "(yarn build:test && yarn version --major) && npm publish",
+    "deploy:minor": "(yarn build:test && yarn version --minor) && npm publish",
+    "deploy:patch": "(yarn build:test && yarn version --patch) && npm publish",
     "test": "vitest run"
   },
   "keywords": [],
