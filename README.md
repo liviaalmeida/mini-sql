@@ -1,6 +1,6 @@
 # 🚀 Welcome to mini-sql
 
-This project was created using [**jison**](https://github.com/zaach/jison).
+This project was created using [**jison**](https://github.com/zaach/jison) but now it runs on [**jiwson**](https://github.com/fraczak/jiwson) so it's compatible to ES6.
 
 You can run
 
