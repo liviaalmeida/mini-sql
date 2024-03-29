@@ -1,6 +1,6 @@
 {
   "name": "mini-sql",
-  "version": "0.21.2",
+  "version": "0.22.0",
   "type": "module",
   "description": "Minimal SQL interpreter written in JavaScript",
   "repository": {
@@ -18,7 +18,8 @@
     "deploy:major": "(yarn build:test && yarn version --major) && npm publish",
     "deploy:minor": "(yarn build:test && yarn version --minor) && npm publish",
     "deploy:patch": "(yarn build:test && yarn version --patch) && npm publish",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "Lívia Almeida <leave.ah@gmail.com>",
