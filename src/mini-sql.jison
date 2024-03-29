@@ -146,9 +146,26 @@ sql
 
 statements
   : statements statement
-    { $$ = [ ...$statements, $statement ]; }
+    {
+      const lastIndexMatch = yy.lexer.matched.lastIndexOf(yy.lexer.match);
+      const previousMatch = yy.lexer.matched.slice(0, lastIndexMatch);
+      const lastIndexStatement = previousMatch.lastIndexOf(yy.statement);
+      yy.statement = previousMatch.slice(lastIndexStatement + yy.statement.length);
+      yy.statement_clean = yy.statement.slice(0, yy.statement.lastIndexOf(';') + 1);
+      $$ = [ ...$statements, { statement: yy.statement_clean, ...$statement } ];
+    }
   | statement
-    { $$ = [{ statement: yy.lexer.matched, ...$statement }]; }
+    {
+      if (yy.lexer.match) {
+        const lastIndex = yy.lexer.matched.lastIndexOf(yy.lexer.match);
+        yy.statement = yy.lexer.matched.slice(0, lastIndex);
+        yy.statement_clean = yy.statement.slice(0, yy.statement.lastIndexOf(';') + 1);
+      } else {
+        yy.statement = yy.lexer.matched;
+        yy.statement_clean = yy.statement.slice(0, yy.statement.lastIndexOf(';') + 1);
+      }
+      $$ = [{ statement: yy.statement_clean, ...$statement }];
+    }
   ;
 
 statement
