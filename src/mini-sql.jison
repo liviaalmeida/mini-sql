@@ -149,9 +149,10 @@ statements
     {
       const lastIndexMatch = yy.lexer.matched.lastIndexOf(yy.lexer.match);
       const previousMatch = yy.lexer.matched.slice(0, lastIndexMatch);
-      const lastIndexStatement = previousMatch.lastIndexOf(yy.statement);
-      yy.statement = previousMatch.slice(lastIndexStatement + yy.statement.length);
+      const indexAcc = previousMatch.indexOf(yy.acc);
+      yy.statement = previousMatch.slice(indexAcc + yy.acc.length);
       yy.statement_clean = yy.statement.slice(0, yy.statement.lastIndexOf(';') + 1);
+      yy.acc = yy.acc.concat(yy.statement);
       $$ = [ ...$statements, { statement: yy.statement_clean, ...$statement } ];
     }
   | statement
@@ -159,9 +160,11 @@ statements
       if (yy.lexer.match) {
         const lastIndex = yy.lexer.matched.lastIndexOf(yy.lexer.match);
         yy.statement = yy.lexer.matched.slice(0, lastIndex);
+        yy.acc = yy.statement;
         yy.statement_clean = yy.statement.slice(0, yy.statement.lastIndexOf(';') + 1);
       } else {
         yy.statement = yy.lexer.matched;
+        yy.acc = yy.statement;
         yy.statement_clean = yy.statement.slice(0, yy.statement.lastIndexOf(';') + 1);
       }
       $$ = [{ statement: yy.statement_clean, ...$statement }];
