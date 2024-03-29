@@ -29,6 +29,7 @@ export declare namespace miniSQL {
       constraint?: Constraint;
     }>;
     name: string;
+    statement: string;
     temp?: boolean;
     type: 'CREATE_TABLE';
   }
@@ -41,6 +42,7 @@ export declare namespace miniSQL {
       as?: string;
       identifiers?: string[];
     };
+    statement: string;
     values?: Array<Array<string>>;
     type: 'INSERT';
   }
