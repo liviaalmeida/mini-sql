@@ -148,7 +148,7 @@ statements
   : statements statement
     { $$ = [ ...$statements, $statement ]; }
   | statement
-    { $$ = [$statement]; }
+    { $$ = [{ statement: yy.lexer.matched, ...$statement }]; }
   ;
 
 statement
